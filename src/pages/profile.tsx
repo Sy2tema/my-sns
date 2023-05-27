@@ -1,8 +1,15 @@
+import Head from "next/head";
 import AppLayout from "../components/AppLayout";
 
 const Profile = () => {
     return (
-        <AppLayout>내 프로필</AppLayout>
+        <>
+            <Head>
+                <meta charSet='utf-8' />
+                <title>내 프로필 | MySNS</title>
+            </Head>
+            <AppLayout>내 프로필</AppLayout>
+        </>
     );
 }
 
