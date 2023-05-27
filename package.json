@@ -13,6 +13,7 @@
     "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.4",
     "next": "^12.3.4",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -43,5 +44,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^8.41.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-react-hooks": "^4.6.0"
   }
 }
