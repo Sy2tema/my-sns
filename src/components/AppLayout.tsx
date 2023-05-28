@@ -14,7 +14,7 @@ const SearchInput = styled(Input.Search)`
 const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
     // 백엔드가 마련되기 전에 로그인 여부를 확인하는 더미 데이터 생성
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    
+
     return (
         <div>
             <Menu mode='horizontal'>
@@ -33,7 +33,7 @@ const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
             </Menu>
             <Row gutter={4}>
                 <Col xs={24} md={6}>
-                    { isLoggedIn ? <UserProfile /> : <LoginForm /> }
+                    { isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn} /> : <LoginForm setIsLoggedIn={setIsLoggedIn} /> }
                 </Col>
                 <Col xs={24} md={12}>
                     {children}
