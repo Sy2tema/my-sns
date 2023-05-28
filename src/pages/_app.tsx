@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 import { NextComponentType } from "next"
 import { AppContext, AppInitialProps, AppProps } from 'next/app';
 
-const App: NextComponentType<AppContext, AppInitialProps, AppProps> = ({ Component }) => {
+const MySNS: NextComponentType<AppContext, AppInitialProps, AppProps> = ({ Component }) => {
     return (
         <>
             <Head>
@@ -17,8 +17,8 @@ const App: NextComponentType<AppContext, AppInitialProps, AppProps> = ({ Compone
     );
 };
 
-App.propTypes = {
+MySNS.propTypes = {
     Component: PropTypes.elementType.isRequired,
 };
 
-export default App;
+export default MySNS;
