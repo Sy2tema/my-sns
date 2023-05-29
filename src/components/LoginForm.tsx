@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import styled from 'styled-components';
 
 const ButtonWrapper = styled.div`
-    marginTop: 10px;
+    margin-top: 10px;
 `;
 
 const FormWrapper = styled(Form)`
@@ -25,7 +25,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
 
     // ButtonWrapper와 같은 기능을 한다.
     // const style = useMemo(() => ({ marginTop: 10 }), []);
-    
+
     const onSubmitForm = useCallback(() => {
         console.log(id, password);
         setIsLoggedIn(true);
@@ -41,12 +41,12 @@ const LoginForm = ({ setIsLoggedIn }) => {
             <div>
                 <label htmlFor="user-password">비밀번호</label>
                 <br />
-                <Input 
-                    name="user-password" 
+                <Input
+                    name="user-password"
                     type="password"
-                    value={password} 
-                    onChange={onChangePassword} 
-                    required 
+                    value={password}
+                    onChange={onChangePassword}
+                    required
                 />
             </div>
             <ButtonWrapper>
