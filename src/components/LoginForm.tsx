@@ -1,7 +1,9 @@
 import { Button, Form, Input } from "antd";
 import Link from "next/link";
+import PropTypes from 'prop-types';
 import { useCallback, useState } from "react";
 import styled from 'styled-components';
+import userInput from "../hooks/userInput";
 
 const ButtonWrapper = styled.div`
     margin-top: 10px;
@@ -12,16 +14,8 @@ const FormWrapper = styled(Form)`
 `;
 
 const LoginForm = ({ setIsLoggedIn }) => {
-    const [id, setId] = useState("");
-    const [password, setPassword] = useState("");
-
-    const onChangeId = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setId(e.target.value);
-    }, []);
-
-    const onChangePassword = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-    }, []);
+    const [id, onChangeId] = userInput("");
+    const [password, onChangePassword] = userInput("");
 
     // ButtonWrapper와 같은 기능을 한다.
     // const style = useMemo(() => ({ marginTop: 10 }), []);
@@ -56,5 +50,9 @@ const LoginForm = ({ setIsLoggedIn }) => {
         </FormWrapper>
     );
 };
+
+LoginForm.propTypes = {
+    setIsLoggedIn: PropTypes.func.isRequired,
+}
 
 export default LoginForm;
