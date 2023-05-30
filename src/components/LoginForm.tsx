@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from "react";
 import styled from 'styled-components';
 import userInput from "../hooks/userInput";
+import { useRouter } from "next/router";
 
 const ButtonWrapper = styled.div`
     margin-top: 10px;
@@ -16,6 +17,7 @@ const FormWrapper = styled(Form)`
 const LoginForm = ({ setIsLoggedIn }) => {
     const [id, onChangeId] = userInput("");
     const [password, onChangePassword] = userInput("");
+    const router = useRouter();
 
     // ButtonWrapper와 같은 기능을 한다.
     // const style = useMemo(() => ({ marginTop: 10 }), []);
@@ -23,6 +25,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
     const onSubmitForm = useCallback(() => {
         console.log(id, password);
         setIsLoggedIn(true);
+        router.push('/profile');
     }, [id, password]);
 
     return (

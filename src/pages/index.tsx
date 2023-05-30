@@ -6,7 +6,7 @@ import AppLayout from '../components/AppLayout';
 const Home = () => {
   return (
     <AppLayout>
-      <div>Hello, Next.Js!</div>
+      <div>프로젝트 홈입니다.</div>
     </AppLayout>
   );
 }

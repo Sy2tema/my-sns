@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { Menu, Input, Row, Col } from 'antd';
@@ -15,25 +15,36 @@ const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
     // 백엔드가 마련되기 전에 로그인 여부를 확인하는 더미 데이터 생성
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    useEffect(() => {
+        const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
+        if (storedIsLoggedIn) {
+            setIsLoggedIn(true);
+        }
+    }, []);
+
+    const handleLogin = () => {
+        setIsLoggedIn(true);
+        localStorage.setItem('isLoggedIn', 'true');
+    };
+
     return (
         <div>
             <Menu mode='horizontal'>
                 <Menu.Item>
                     <Link href="/"><a>프로젝트 홈</a></Link>
                 </Menu.Item>
-                <Menu.Item>
-                    <Link href="/profile"><a>프로필</a></Link>
-                </Menu.Item>
+                {isLoggedIn && (
+                    <Menu.Item>
+                        <Link href="/profile"><a>프로필</a></Link>
+                    </Menu.Item>
+                )}
                 <Menu.Item>
                     <SearchInput enterButton />
-                </Menu.Item>
-                <Menu.Item>
-                    <Link href="/signup"><a>회원가입</a></Link>
                 </Menu.Item>
             </Menu>
             <Row gutter={4}>
                 <Col xs={24} md={6}>
-                    {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn} /> : <LoginForm setIsLoggedIn={setIsLoggedIn} />}
+                    {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn} /> : <LoginForm setIsLoggedIn={handleLogin} />}
                 </Col>
                 <Col xs={24} md={12}>
                     {children}
