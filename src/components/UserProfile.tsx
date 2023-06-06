@@ -1,17 +1,20 @@
 import { Card, Avatar, Button } from 'antd';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { logoutAction } from '../reducers';
 
 const ButtonWrapper = styled(Button)`
     margin-top: 10px;
 `;
 
-const UserProfile = ({ setIsLoggedIn }) => {
+const UserProfile = () => {
+    const dispatch = useDispatch();
     const router = useRouter();
 
     const onLogOut = useCallback(() => {
-        setIsLoggedIn(false);
+        dispatch(logoutAction());
         localStorage.removeItem('isLoggedIn');
         router.push('/');
     }, [])
@@ -24,7 +27,7 @@ const UserProfile = ({ setIsLoggedIn }) => {
                 <div key="followers">필로워<br />0</div>,
             ]}
         >
-            <Card.Meta 
+            <Card.Meta
                 avatar={<Avatar>LGH</Avatar>}
                 title="이건혁"
             />

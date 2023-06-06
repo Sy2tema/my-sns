@@ -1,10 +1,11 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { Menu, Input, Row, Col } from 'antd';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 
 // 이미 있는 컴포넌트를 커스텀할 수 있다.
 const SearchInput = styled(Input.Search)`
@@ -12,8 +13,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // 백엔드가 마련되기 전에 로그인 여부를 확인하는 더미 데이터 생성
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
 
     useEffect(() => {
         const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
@@ -44,7 +44,7 @@ const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
             </Menu>
             <Row gutter={4}>
                 <Col xs={24} md={6}>
-                    {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn} /> : <LoginForm setIsLoggedIn={handleLogin} />}
+                    {isLoggedIn ? <UserProfile /> : <LoginForm />}
                 </Col>
                 <Col xs={24} md={12}>
                     {children}

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import 'antd/dist/antd.css';
 import { NextComponentType } from "next"
 import { AppContext, AppInitialProps, AppProps } from 'next/app';
+import wrapper from '../store/configureStore';
 
 const MySNS: NextComponentType<AppContext, AppInitialProps, AppProps> = ({ Component }) => {
     return (
@@ -21,4 +22,4 @@ MySNS.propTypes = {
     Component: PropTypes.elementType.isRequired,
 };
 
-export default MySNS;
+export default wrapper.withRedux(MySNS);
