@@ -18,7 +18,3 @@ const wrapper = createWrapper(configureStore, {
 });
 
 export default wrapper;
-
-const set = new Set([1]);
-
-set.add()
