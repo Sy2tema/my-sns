@@ -29,7 +29,7 @@ const LoginForm = () => {
         console.log(id, password);
         dispatch(loginAction({ id, password }));
         router.push('/profile');
-    }, [id, password]);
+    }, [dispatch, id, password, router]);
 
     return (
         <FormWrapper onFinish={onSubmitForm}>

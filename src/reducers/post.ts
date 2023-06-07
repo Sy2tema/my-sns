@@ -6,8 +6,15 @@ const initialState = {
             nickname: '이건혁'
         },
         content: '첫 번째 게시글 #해시태그 #익스프레스',
-        Images: [],
-        Comments: [],
+        Images: [{
+            src: 'https://cdn.pixabay.com/photo/2023/05/27/11/12/naxos-8021321_1280.jpg'
+        },],
+        Comments: [{
+            User: {
+                nickname: '답변자',
+            },
+            content: '예시 답글',
+        }],
     }],
     imagePaths: [],
     postAdded: false,
