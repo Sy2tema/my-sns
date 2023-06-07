@@ -6,6 +6,7 @@ import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../reducers';
 
 // 이미 있는 컴포넌트를 커스텀할 수 있다.
 const SearchInput = styled(Input.Search)`
@@ -13,7 +14,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+    const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
 
     useEffect(() => {
         const storedIsLoggedIn = localStorage.getItem('isLoggedIn');

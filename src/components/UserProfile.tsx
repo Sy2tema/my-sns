@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { logoutAction } from '../reducers';
+import { logoutAction } from '../reducers/user';
 
 const ButtonWrapper = styled(Button)`
     margin-top: 10px;
