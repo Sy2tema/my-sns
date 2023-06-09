@@ -1,6 +1,13 @@
-const initialState = {
+interface UserState {
+    isLoggedIn: boolean;
+    user: {};
+    signUpData: {};
+    loginData: {};
+}
+
+const initialState: UserState = {
     isLoggedIn: false,
-    user: null,
+    user: {},
     signUpData: {},
     loginData: {},
 };

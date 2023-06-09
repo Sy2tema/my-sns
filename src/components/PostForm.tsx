@@ -7,7 +7,7 @@ import { addPost } from "../reducers/post";
 
 const PostForm = () => {
     const dispatch = useDispatch();
-    const imagePaths = useSelector((state: RootState) => { state.post.imagePaths });
+    const imagePaths = useSelector((state: RootState) => state.post.imagePaths);
     const [text, onChangeText] = userInput("");
     const onSubmit = useCallback(() => {
         console.log(text);
@@ -32,14 +32,15 @@ const PostForm = () => {
                 <Button type="primary" style={{ float: 'right' }} htmlType="submit">트윗</Button>
             </div>
             <div>
-                {imagePaths.map((value: string) => {
+                {imagePaths.map((value) => (
                     <div key={value} style={{ display: 'inline-block' }}>
                         <img src={value} style={{ width: '200px' }} alt={value} />
                         <div>
                             <Button>제거</Button>
                         </div>
                     </div>
-                })}
+
+                ))}
             </div>
         </Form>
     );

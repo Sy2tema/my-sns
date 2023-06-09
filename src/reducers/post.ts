@@ -1,9 +1,31 @@
-const initialState = {
+interface PostState {
+    mainPosts: {
+        id: number;
+        User: {
+            id: number;
+            nickname: string;
+        };
+        content: string;
+        Images: {
+            src: string;
+        }[];
+        Comments: {
+            User: {
+                nickname: string;
+            };
+            content: string;
+        }[];
+    }[];
+    imagePaths: string[];
+    postAdded: boolean;
+}
+
+const initialState: PostState = {
     mainPosts: [{
         id: 1,
         User: {
             id: 1,
-            nickname: '이건혁'
+            nickname: 'William'
         },
         content: '첫 번째 게시글 #해시태그 #익스프레스',
         Images: [{
@@ -13,7 +35,7 @@ const initialState = {
             User: {
                 nickname: '답변자',
             },
-            content: '예시 답글',
+            content: '샘플 답글',
         }],
     }],
     imagePaths: [],
@@ -29,7 +51,7 @@ const dummyPost = {
     id: 2,
     User: {
         id: 1,
-        nickname: '이건혁',
+        nickname: 'William',
     },
     content: '더미게시글입니다.',
     Images: [],
