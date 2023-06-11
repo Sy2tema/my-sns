@@ -20,6 +20,12 @@ interface PostState {
     postAdded: boolean;
 }
 
+type PostAction = AddPost;
+
+interface AddPost {
+    type: typeof ADD_POST,
+}
+
 const initialState: PostState = {
     mainPosts: [{
         id: 1,
@@ -58,7 +64,7 @@ const dummyPost = {
     Comments: [],
 }
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action: PostAction): PostState => {
     switch (action.type) {
         case ADD_POST:
             return {

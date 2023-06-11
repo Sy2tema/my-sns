@@ -1,44 +1,57 @@
 interface UserState {
     isLoggedIn: boolean;
-    user: {};
+    ownUser: {} | null;
     signUpData: {};
     loginData: {};
 }
 
+type UserAction = LoginAction | LogoutAction;
+
+interface LoginAction {
+    type: typeof LOG_IN,
+    data: UserState,
+}
+
+interface LogoutAction {
+    type: typeof LOG_OUT,
+}
+
 const initialState: UserState = {
     isLoggedIn: false,
-    user: {},
+    ownUser: null,
     signUpData: {},
     loginData: {},
 };
 
 // action creator
-export const loginAction = (data) => {
+const LOG_IN = 'LOG_IN';
+export const loginAction = (data: UserState): LoginAction => {
     return {
-        type: 'LOG_IN',
+        type: LOG_IN,
         data,
     }
 };
 
-export const logoutAction = () => {
+const LOG_OUT = 'LOG_OUT';
+export const logoutAction = (): LogoutAction => {
     return {
-        type: 'LOG_OUT',
+        type: LOG_OUT,
     }
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action: UserAction): UserState => {
     switch (action.type) {
-        case 'LOG_IN':
+        case LOG_IN:
             return {
                 ...state,
                 isLoggedIn: true,
-                user: action.data,
+                ownUser: action.data,
             };
-        case 'LOG_OUT':
+        case LOG_OUT:
             return {
                 ...state,
                 isLoggedIn: false,
-                user: null,
+                ownUser: null,
             };
         default:
             return state;
