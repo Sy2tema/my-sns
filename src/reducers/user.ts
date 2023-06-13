@@ -1,5 +1,6 @@
 interface UserState {
     isLoggedIn: boolean;
+    id: number;
     ownUser: {} | null;
     signUpData: {};
     loginData: {};
@@ -18,6 +19,7 @@ interface LogoutAction {
 
 const initialState: UserState = {
     isLoggedIn: false,
+    id: -1,
     ownUser: null,
     signUpData: {},
     loginData: {},
