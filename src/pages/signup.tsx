@@ -4,18 +4,18 @@ import AppLayout from "../components/AppLayout";
 import styled from "styled-components";
 import { Button, Checkbox, Form } from "antd";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
-import userInput from "../hooks/userInput";
+import useInput from "../hooks/useInput";
 
 const ErrorMessage = styled.div`
     color: red;
 `;
 
 const Signup = () => {
-    const [id, onChangeId] = userInput("");
-    const [nickname, onChangeNickname] = userInput("");
+    const [id, onChangeId] = useInput("");
+    const [nickname, onChangeNickname] = useInput("");
 
     // 비밀번호 중복 체크 부분은 커스텀 훅을 사용하지 않음
-    const [password, onChangePassword] = userInput("");
+    const [password, onChangePassword] = useInput("");
     const [passwordCheck, setPasswordCheck] = useState("");
     const [passwordError, setPasswordError] = useState(false);
     const onChangePasswordCheck = useCallback((e: ChangeEvent<HTMLInputElement>) => {

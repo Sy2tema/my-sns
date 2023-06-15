@@ -2,7 +2,7 @@ import { Button, Form, Input } from "antd";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import styled from 'styled-components';
-import userInput from "../hooks/userInput";
+import useInput from "../hooks/useInput";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../reducers/user";
@@ -17,9 +17,8 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
     const dispatch = useDispatch();
-
-    const [id, onChangeId] = userInput("");
-    const [password, onChangePassword] = userInput("");
+    const [id, onChangeId] = useInput("");
+    const [password, onChangePassword] = useInput("");
     const router = useRouter();
 
     // ButtonWrapper와 같은 기능을 한다.
