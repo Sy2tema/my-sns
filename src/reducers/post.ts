@@ -36,7 +36,11 @@ const initialState: PostState = {
         content: '첫 번째 게시글 #해시태그 #익스프레스',
         Images: [{
             src: 'https://cdn.pixabay.com/photo/2023/05/27/11/12/naxos-8021321_1280.jpg'
-        },],
+        }, {
+            src: 'https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg'
+        }, {
+            src: 'https://cdn.pixabay.com/photo/2023/05/07/09/59/mountains-7976041_1280.jpg'
+        }],
         Comments: [{
             User: {
                 nickname: '답변자',
