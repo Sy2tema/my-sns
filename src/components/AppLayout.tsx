@@ -4,13 +4,28 @@ import PropTypes from 'prop-types';
 import { Menu, Input, Row, Col } from 'antd';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducers';
 
 // 이미 있는 컴포넌트를 커스텀할 수 있다.
 const SearchInput = styled(Input.Search)`
     vertical-align: middle;
+`;
+
+const Global = createGlobalStyle`
+    .ant-row {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    .ant-col:first-child {
+        padding-left: 0 !important;
+    }
+
+    .ant-col:last-child {
+        padding-right: 0 !important;
+    }
 `;
 
 const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -30,6 +45,7 @@ const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     return (
         <div>
+            <Global />
             <Menu mode='horizontal'>
                 <Menu.Item>
                     <Link href="/"><a>프로젝트 홈</a></Link>
