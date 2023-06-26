@@ -1,15 +1,27 @@
 import { createWrapper } from "next-redux-wrapper";
 import { applyMiddleware, compose, legacy_createStore as createStore } from "redux";
+import createSagaMiddleware from "redux-saga";
 import reducer from '../reducers'
 import { composeWithDevTools } from "redux-devtools-extension";
+import rootSaga from '../sagas';
 
-// @reduxjs/toolkit의 권장사용을 유도하기 위해서 createStore에 취소선을 그어두었다.
+const loggerMiddleware = ({ dispatch, getState }) => (next) => (action) => {
+    if (typeof action === 'function') {
+        return action(dispatch, getState);
+    }
+
+    return next(action);
+};
+
 const configureStore = () => {
-    const middlewares = [];
+    const sagaMiddleware = createSagaMiddleware();
+    const middlewares = [sagaMiddleware, loggerMiddleware];
     const enhancer = process.env.NODE_ENV === 'production'
         ? compose(applyMiddleware(...middlewares))
         : composeWithDevTools(applyMiddleware(...middlewares));
     const store = createStore(reducer, enhancer);
+    store.sagaTask = sagaMiddleware.run(rootSaga);
+
     return store;
 };
 
