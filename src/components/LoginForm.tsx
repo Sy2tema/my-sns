@@ -4,8 +4,9 @@ import { useCallback, useState } from "react";
 import styled from 'styled-components';
 import useInput from "../hooks/useInput";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
-import { loginAction } from "../reducers/user";
+import { useDispatch, useSelector } from "react-redux";
+import { loginRequestAction } from "../reducers/user";
+import { RootState } from "../reducers";
 
 const ButtonWrapper = styled.div`
     margin-top: 10px;
@@ -17,6 +18,7 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
     const dispatch = useDispatch();
+    const { loginDone } = useSelector((state: RootState) => state.user);
     const [id, onChangeId] = useInput("");
     const [password, onChangePassword] = useInput("");
     const router = useRouter();
@@ -25,9 +27,7 @@ const LoginForm = () => {
     // const style = useMemo(() => ({ marginTop: 10 }), []);
 
     const onSubmitForm = useCallback(() => {
-        console.log(id, password);
-        dispatch(loginAction({ id, password }));
-        router.push('/profile');
+        dispatch(loginRequestAction({ id, password }));
     }, [dispatch, id, password, router]);
 
     return (
@@ -49,8 +49,8 @@ const LoginForm = () => {
                 />
             </div>
             <ButtonWrapper>
-                <Button type="primary" htmlType="submit" loading={false}>로그인</Button>
-                <Link href="/signup"><a><Button>회원가입</Button></a></Link>
+                <Button type="primary" htmlType="submit" loading={loginDone}>로그인</Button>
+                <Link href="/signup"><a href="/"><Button>회원가입</Button></a></Link>
             </ButtonWrapper>
         </FormWrapper>
     );
