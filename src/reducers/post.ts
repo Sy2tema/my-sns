@@ -1,3 +1,5 @@
+import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE } from "../actions";
+
 interface PostState {
     mainPosts: {
         id: number;
@@ -17,13 +19,38 @@ interface PostState {
         }[];
     }[];
     imagePaths: string[];
-    postAdded: boolean;
+    addPostLoading: boolean;
+    addPostDone: boolean;
+    addPostError: boolean | string | null;
+    addCommentLoading: boolean;
+    addCommentDone: boolean;
+    addCommentError: boolean | string | null;
 }
 
-type PostAction = AddPost;
+type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction | AddCommentRequestAction | AddCommentSuccessAction | AddCommentFailureAction;
 
-interface AddPost {
-    type: typeof ADD_POST,
+interface AddPostRequestAction {
+    type: typeof ADD_POST_REQUEST,
+}
+interface AddPostSuccessAction {
+    type: typeof ADD_POST_SUCCESS,
+    data: PostState,
+}
+interface AddPostFailureAction {
+    type: typeof ADD_POST_FAILURE,
+    error: string,
+}
+
+interface AddCommentRequestAction {
+    type: typeof ADD_COMMENT_REQUEST,
+}
+interface AddCommentSuccessAction {
+    type: typeof ADD_COMMENT_SUCCESS,
+    data: PostState,
+}
+interface AddCommentFailureAction {
+    type: typeof ADD_COMMENT_FAILURE,
+    error: string,
 }
 
 const initialState: PostState = {
@@ -49,13 +76,19 @@ const initialState: PostState = {
         }],
     }],
     imagePaths: [],
-    postAdded: false,
+    addPostLoading: false,
+    addPostDone: false,
+    addPostError: null,
+    addCommentLoading: false,
+    addCommentDone: false,
+    addCommentError: null,
 };
 
-const ADD_POST = 'ADD_POST';
-export const addPost = {
-    type: ADD_POST,
-}
+
+export const addPost = (data: PostState) => ({
+    type: ADD_POST_REQUEST,
+    data,
+});
 
 const dummyPost = {
     id: 2,
@@ -70,11 +103,44 @@ const dummyPost = {
 
 const reducer = (state = initialState, action: PostAction): PostState => {
     switch (action.type) {
-        case ADD_POST:
+        case ADD_POST_REQUEST:
+            return {
+                ...state,
+                addPostLoading: true,
+                addPostDone: false,
+                addPostError: null,
+            };
+        case ADD_POST_SUCCESS:
             return {
                 ...state,
                 mainPosts: [dummyPost, ...state.mainPosts],
-                postAdded: true,
+                addPostLoading: false,
+                addPostDone: true,
+            };
+        case ADD_POST_FAILURE:
+            return {
+                ...state,
+                addPostLoading: false,
+                addPostError: action.error,
+            };
+        case ADD_COMMENT_REQUEST:
+            return {
+                ...state,
+                addCommentLoading: true,
+                addCommentDone: false,
+                addCommentError: null,
+            };
+        case ADD_COMMENT_SUCCESS:
+            return {
+                ...state,
+                addCommentLoading: false,
+                addCommentDone: true,
+            };
+        case ADD_COMMENT_FAILURE:
+            return {
+                ...state,
+                addCommentLoading: false,
+                addCommentError: action.error,
             };
         default:
             return state;
