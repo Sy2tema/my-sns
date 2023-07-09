@@ -13,7 +13,7 @@ const ButtonWrapper = styled(Button)`
 const UserProfile = () => {
     const dispatch = useDispatch();
     const router = useRouter();
-    const { ownUser, logoutDone } = useSelector((state: RootState) => state.user);
+    const { ownUser, logoutLoading } = useSelector((state: RootState) => state.user);
 
     const onLogOut = useCallback(() => {
         dispatch(logoutRequestAction());
@@ -24,16 +24,16 @@ const UserProfile = () => {
     return (
         <Card
             actions={[
-                <div key="twit">트윗<br />0</div>,
-                <div key="followings">팔로잉<br />0</div>,
-                <div key="followers">필로워<br />0</div>,
+                <div key="twit">트윗<br />{ownUser.Posts.length}</div>,
+                <div key="followings">팔로잉<br />{ownUser.Followings.length}</div>,
+                <div key="followers">필로워<br />{ownUser.Followers.length}</div>,
             ]}
         >
             <Card.Meta
                 avatar={<Avatar>{ownUser.nickname[0]}</Avatar>}
                 title={ownUser.nickname}
             />
-            <ButtonWrapper onClick={onLogOut} loading={logoutDone}>로그아웃</ButtonWrapper>
+            <ButtonWrapper onClick={onLogOut} loading={logoutLoading}>로그아웃</ButtonWrapper>
         </Card>
     );
 };

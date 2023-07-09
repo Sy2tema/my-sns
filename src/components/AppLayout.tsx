@@ -29,7 +29,7 @@ const Global = createGlobalStyle`
 `;
 
 const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const loginDone = useSelector((state: RootState) => state.user.loginDone);
+    const ownUser = useSelector((state: RootState) => state.user.ownUser);
 
     return (
         <div>
@@ -38,7 +38,7 @@ const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
                 <Menu.Item>
                     <Link href="/"><a href='/'>프로젝트 홈</a></Link>
                 </Menu.Item>
-                {loginDone && (
+                {ownUser && (
                     <Menu.Item>
                         <Link href="/profile"><a href='/'>프로필</a></Link>
                     </Menu.Item>
@@ -49,7 +49,7 @@ const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
             </Menu>
             <Row gutter={4}>
                 <Col xs={24} md={6}>
-                    {loginDone ? <UserProfile /> : <LoginForm />}
+                    {ownUser ? <UserProfile /> : <LoginForm />}
                 </Col>
                 <Col xs={24} md={12}>
                     {children}

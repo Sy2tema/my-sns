@@ -1,6 +1,6 @@
 import { Button, Form, Input } from "antd";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import styled from 'styled-components';
 import useInput from "../hooks/useInput";
 import { useRouter } from "next/router";
@@ -18,8 +18,8 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
     const dispatch = useDispatch();
-    const { loginDone } = useSelector((state: RootState) => state.user);
-    const [id, onChangeId] = useInput("");
+    const { loginLoading } = useSelector((state: RootState) => state.user);
+    const [email, onChangeEmail] = useInput("");
     const [password, onChangePassword] = useInput("");
     const router = useRouter();
 
@@ -27,15 +27,15 @@ const LoginForm = () => {
     // const style = useMemo(() => ({ marginTop: 10 }), []);
 
     const onSubmitForm = useCallback(() => {
-        dispatch(loginRequestAction({ id, password }));
-    }, [dispatch, id, password, router]);
+        dispatch(loginRequestAction({ email, password }));
+    }, [dispatch, email, password, router]);
 
     return (
         <FormWrapper onFinish={onSubmitForm}>
             <div>
-                <label htmlFor="user-id">아이디</label>
+                <label htmlFor="user-email">이메일</label>
                 <br />
-                <Input name="user-id" value={id} onChange={onChangeId} required />
+                <Input name="user-email" type="email" value={email} onChange={onChangeEmail} required />
             </div>
             <div>
                 <label htmlFor="user-password">비밀번호</label>
@@ -49,7 +49,7 @@ const LoginForm = () => {
                 />
             </div>
             <ButtonWrapper>
-                <Button type="primary" htmlType="submit" loading={loginDone}>로그인</Button>
+                <Button type="primary" htmlType="submit" loading={loginLoading}>로그인</Button>
                 <Link href="/signup"><a href="/"><Button>회원가입</Button></a></Link>
             </ButtonWrapper>
         </FormWrapper>

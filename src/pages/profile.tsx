@@ -1,11 +1,12 @@
 import Head from "next/head";
+import { useSelector } from "react-redux";
 import AppLayout from "../components/AppLayout";
 import NicknameEditForm from "../components/NicknameEditForm";
 import FollowList from "../components/FollowList";
+import { RootState } from "../reducers";
 
 const Profile = () => {
-    const followerList = [{ nickname: "이건혁" }, { nickname: "sy2tema" }, { nickname: "프론트" }];
-    const followingList = [{ nickname: "이건혁" }, { nickname: "sy2tema" }, { nickname: "프론트" }];
+    const { ownUser } = useSelector((state: RootState) => state.user);
 
     return (
         <>
@@ -15,8 +16,8 @@ const Profile = () => {
             </Head>
             <AppLayout>
                 <NicknameEditForm />
-                <FollowList header="팔로잉 목록" data={followingList} />
-                <FollowList header="팔로워 목록" data={followerList} />
+                <FollowList header="팔로잉 목록" data={ownUser.Followings} />
+                <FollowList header="팔로워 목록" data={ownUser.Followers} />
             </AppLayout>
         </>
     );
