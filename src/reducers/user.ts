@@ -1,4 +1,9 @@
-import { LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE } from "../actions";
+import {
+    LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
+    LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
+    SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE,
+    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE
+} from "../actions";
 
 interface UserState {
     loginLoading: boolean;
@@ -10,15 +15,22 @@ interface UserState {
     signupLoading: boolean;
     signupDone: boolean;
     signupError: boolean | string | null;
+    changeNicknameLoading: boolean;
+    changeNicknameDone: boolean;
+    changeNicknameError: boolean | string | null;
     ownUser: {} | null;
     signUpData: {};
     loginData: {};
 }
 
-type UserAction = LoginRequestAction | LoginSuccessAction | LoginFailureAction | LogoutRequestAction | LogoutSuccessAction | LogoutFailureAction | SignupRequestAction | SignupSuccessAction | SignupFailureAction;
+type UserAction = LoginRequestAction | LoginSuccessAction | LoginFailureAction
+    | LogoutRequestAction | LogoutSuccessAction | LogoutFailureAction
+    | SignupRequestAction | SignupSuccessAction | SignupFailureAction
+    | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction;
 
 interface LoginRequestAction {
     type: typeof LOG_IN_REQUEST,
+    data: UserState,
 }
 interface LoginSuccessAction {
     type: typeof LOG_IN_SUCCESS,
@@ -48,6 +60,16 @@ interface SignupFailureAction {
     type: typeof SIGN_UP_FAILURE,
     error: string,
 }
+interface ChangeNicknameRequestAction {
+    type: typeof CHANGE_NICKNAME_REQUEST,
+}
+interface ChangeNicknameSuccessAction {
+    type: typeof CHANGE_NICKNAME_SUCCESS,
+}
+interface ChangeNicknameFailureAction {
+    type: typeof CHANGE_NICKNAME_FAILURE,
+    error: string,
+}
 
 const initialState: UserState = {
     loginLoading: false,
@@ -59,6 +81,9 @@ const initialState: UserState = {
     signupLoading: false,
     signupDone: false,
     signupError: null,
+    changeNicknameLoading: false,
+    changeNicknameDone: false,
+    changeNicknameError: null,
     ownUser: null,
     signUpData: {},
     loginData: {},
@@ -78,7 +103,7 @@ export const logoutRequestAction = (): LogoutRequestAction => {
     }
 };
 
-const dummyUser = (data) => ({
+const dummyUser = (data: UserState) => ({
     ...data,
     nickname: "Sy2tema",
     id: 1,
@@ -148,6 +173,26 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 ...state,
                 signupLoading: false,
                 signupError: action.error,
+            };
+        case CHANGE_NICKNAME_REQUEST:
+            return {
+                ...state,
+                changeNicknameLoading: true,
+                changeNicknameError: null,
+                changeNicknameDone: false,
+            };
+        case CHANGE_NICKNAME_SUCCESS:
+            return {
+                ...state,
+                changeNicknameLoading: false,
+                changeNicknameDone: true,
+                ownUser: null,
+            };
+        case CHANGE_NICKNAME_FAILURE:
+            return {
+                ...state,
+                changeNicknameLoading: false,
+                changeNicknameError: action.error,
             };
         default:
             return state;
