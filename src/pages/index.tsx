@@ -7,12 +7,12 @@ import PostCard from '../components/PostCard';
 
 // nextjs는 12, antd는 4버전으로 맞추자
 const Home = () => {
-  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+  const ownUser = useSelector((state: RootState) => state.user.ownUser);
   const mainPosts = useSelector((state: RootState) => state.post.mainPosts);
 
   return (
     <AppLayout>
-      {isLoggedIn && <PostForm />}
+      {ownUser && <PostForm />}
       {mainPosts.map((post) => <PostCard key={post.id} post={post} />)}
     </AppLayout>
   );
