@@ -7,16 +7,16 @@ import useInput from "../hooks/useInput";
 
 const PostForm = () => {
     const dispatch = useDispatch();
-    const { imagePaths, addPostDone } = useSelector((state: RootState) => state.post);
+    const { imagePaths, addPostDone, addPostLoading } = useSelector((state: RootState) => state.post);
     const [text, onChangeText, setText] = useInput("");
 
     useEffect(() => {
         if (addPostDone) {
             setText("");
         }
-    })
+    }, [addPostDone]);
 
-    const onSubmit = useCallback(() => {
+    const onSubmitPost = useCallback(() => {
         dispatch(addPost(text));
     }, [text]);
 
@@ -29,7 +29,7 @@ const PostForm = () => {
         <Form
             style={{ margin: '10px 0 20px' }}
             encType="multipart/form-data"
-            onFinish={onSubmit}
+            onFinish={onSubmitPost}
         >
             <Input.TextArea
                 value={text}
@@ -40,7 +40,7 @@ const PostForm = () => {
             <div>
                 <input type="file" multiple hidden ref={imageInput} />
                 <Button onClick={onClickImageUpload}>이미지 업로드</Button>
-                <Button type="primary" style={{ float: 'right' }} htmlType="submit">트윗</Button>
+                <Button type="primary" style={{ float: 'right' }} htmlType="submit" loading={addPostLoading}>트윗</Button>
             </div>
             <div>
                 {imagePaths.map((value) => (
