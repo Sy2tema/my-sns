@@ -61,6 +61,8 @@
     "@types/styled-components": "^5.1.26",
     "eslint": "^8.41.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-react-hooks": "^4.6.0"
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "shortid": "^2.2.16",
+    "@types/shortid": "^0.0.29"
   }
 }
