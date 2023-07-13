@@ -3,7 +3,7 @@ import shortId from "shortid";
 
 interface PostState {
     mainPosts: {
-        id: number;
+        id: string;
         User: {
             id: number;
             nickname: string;
@@ -13,6 +13,7 @@ interface PostState {
             src: string;
         }[];
         Comments: {
+            id: string;
             User: {
                 nickname: string;
             };
@@ -55,7 +56,7 @@ interface AddCommentFailureAction {
 
 const initialState: PostState = {
     mainPosts: [{
-        id: 1,
+        id: "1",
         User: {
             id: 1,
             nickname: 'William'
@@ -69,6 +70,7 @@ const initialState: PostState = {
             src: 'https://cdn.pixabay.com/photo/2023/05/07/09/59/mountains-7976041_1280.jpg'
         }],
         Comments: [{
+            id: "test",
             User: {
                 nickname: '답변자',
             },
@@ -95,7 +97,7 @@ export const addComment = (data: PostState) => ({
 })
 
 const dummyPost = (data) => ({
-    id: Number(shortId.generate()),
+    id: shortId.generate(),
     User: {
         id: 1,
         nickname: 'William',
@@ -145,8 +147,8 @@ const reducer = (state = initialState, action: PostAction): PostState => {
             };
         case ADD_COMMENT_SUCCESS:
             const postIndex = state.mainPosts.findIndex((value) => value.id === action.data.postId);
-            const post = state.mainPosts[postIndex];
-            const Comments = [dummyComment(action.data), ...post.Comments];
+            const post = { ...state.mainPosts[postIndex] };
+            const Comments = [dummyComment(action.data.content), ...post.Comments];
             const mainPosts = [...state.mainPosts];
             mainPosts[postIndex] = { ...post, Comments };
             return {
