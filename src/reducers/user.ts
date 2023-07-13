@@ -3,7 +3,8 @@ import {
     LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
     SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE,
-    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE
+    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
+    ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER
 } from "../actions";
 
 interface UserState {
@@ -27,7 +28,8 @@ interface UserState {
 type UserAction = LoginRequestAction | LoginSuccessAction | LoginFailureAction
     | LogoutRequestAction | LogoutSuccessAction | LogoutFailureAction
     | SignupRequestAction | SignupSuccessAction | SignupFailureAction
-    | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction;
+    | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction
+    | AddPostToCurrentUserAction | RemovePostFromCurrentUserAction;
 
 interface LoginRequestAction {
     type: typeof LOG_IN_REQUEST,
@@ -70,6 +72,13 @@ interface ChangeNicknameSuccessAction {
 interface ChangeNicknameFailureAction {
     type: typeof CHANGE_NICKNAME_FAILURE,
     error: string,
+}
+interface AddPostToCurrentUserAction {
+    type: typeof ADD_POST_TO_CURRENT_USER,
+    data: string,
+}
+interface RemovePostFromCurrentUserAction {
+    type: typeof REMOVE_POST_FROM_CURRENT_USER,
 }
 
 const initialState: UserState = {
@@ -194,6 +203,22 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 ...state,
                 changeNicknameLoading: false,
                 changeNicknameError: action.error,
+            };
+        case ADD_POST_TO_CURRENT_USER:
+            return {
+                ...state,
+                ownUser: {
+                    ...state.ownUser,
+                    Posts: [{ id: action.data }, ...state.ownUser?.Posts],
+                },
+            };
+        case REMOVE_POST_FROM_CURRENT_USER:
+            return {
+                ...state,
+                ownUser: {
+                    ...state.ownUser,
+                    Posts: state.ownUser?.Posts.filter((value) => value.id !== action.data),
+                },
             };
         default:
             return state;

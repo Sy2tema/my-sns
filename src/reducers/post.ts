@@ -1,4 +1,8 @@
-import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE } from "../actions";
+import {
+    ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
+    ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
+    REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE
+} from "../actions";
 import shortId from "shortid";
 
 interface PostState {
@@ -29,9 +33,14 @@ interface PostState {
     addCommentLoading: boolean;
     addCommentDone: boolean;
     addCommentError: boolean | string | null;
+    removePostLoading: boolean;
+    removePostDone: boolean;
+    removePostError: boolean | string | null;
 }
 
-type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction | AddCommentRequestAction | AddCommentSuccessAction | AddCommentFailureAction;
+type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction
+    | AddCommentRequestAction | AddCommentSuccessAction | AddCommentFailureAction
+    | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction;
 
 interface AddPostRequestAction {
     type: typeof ADD_POST_REQUEST,
@@ -53,6 +62,17 @@ interface AddCommentSuccessAction {
 }
 interface AddCommentFailureAction {
     type: typeof ADD_COMMENT_FAILURE,
+    error: string,
+}
+interface RemovePostRequestAction {
+    type: typeof REMOVE_POST_REQUEST,
+}
+interface RemovePostSuccessAction {
+    type: typeof REMOVE_POST_SUCCESS,
+    data: string,
+}
+interface RemovePostFailureAction {
+    type: typeof REMOVE_POST_FAILURE,
     error: string,
 }
 
@@ -90,6 +110,9 @@ const initialState: PostState = {
     addCommentLoading: false,
     addCommentDone: false,
     addCommentError: null,
+    removePostLoading: false,
+    removePostDone: false,
+    removePostError: null,
 };
 
 export const addPost = (data: PostState) => ({
@@ -103,12 +126,12 @@ export const addComment = (data: PostState) => ({
 })
 
 const dummyPost = (data) => ({
-    id: shortId.generate(),
+    id: data.id,
     User: {
         id: "1@1.1",
         nickname: 'William',
     },
-    content: data,
+    content: data.content,
     Images: [],
     Comments: [],
 });
@@ -168,6 +191,26 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 ...state,
                 addCommentLoading: false,
                 addCommentError: action.error,
+            };
+        case REMOVE_POST_REQUEST:
+            return {
+                ...state,
+                removePostLoading: true,
+                removePostDone: false,
+                removePostError: null,
+            };
+        case REMOVE_POST_SUCCESS:
+            return {
+                ...state,
+                mainPosts: state.mainPosts.filter((value) => value.id !== action.data),
+                removePostLoading: false,
+                removePostDone: true,
+            };
+        case REMOVE_POST_FAILURE:
+            return {
+                ...state,
+                removePostLoading: false,
+                removePostError: action.error,
             };
         default:
             return state;
