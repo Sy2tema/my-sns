@@ -16,7 +16,7 @@ const CommentForm = ({ post }) => {
         if (addCommentDone) {
             setCommentText("");
         }
-    })
+    }, [addCommentDone]);
 
     const onSubmitComment = useCallback(() => {
         dispatch({
