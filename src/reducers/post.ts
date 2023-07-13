@@ -5,16 +5,18 @@ interface PostState {
     mainPosts: {
         id: string;
         User: {
-            id: number;
+            id: string;
             nickname: string;
         };
         content: string;
         Images: {
+            id: string;
             src: string;
         }[];
         Comments: {
             id: string;
             User: {
+                id: string;
                 nickname: string;
             };
             content: string;
@@ -58,20 +60,24 @@ const initialState: PostState = {
     mainPosts: [{
         id: "1",
         User: {
-            id: 1,
+            id: "1@1.1",
             nickname: 'William'
         },
         content: '첫 번째 게시글 #해시태그 #익스프레스',
         Images: [{
+            id: shortId.generate(),
             src: 'https://cdn.pixabay.com/photo/2023/05/27/11/12/naxos-8021321_1280.jpg'
         }, {
+            id: shortId.generate(),
             src: 'https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg'
         }, {
+            id: shortId.generate(),
             src: 'https://cdn.pixabay.com/photo/2023/05/07/09/59/mountains-7976041_1280.jpg'
         }],
         Comments: [{
-            id: "test",
+            id: shortId.generate(),
             User: {
+                id: shortId.generate(),
                 nickname: '답변자',
             },
             content: '샘플 답글',
@@ -99,7 +105,7 @@ export const addComment = (data: PostState) => ({
 const dummyPost = (data) => ({
     id: shortId.generate(),
     User: {
-        id: 1,
+        id: "1@1.1",
         nickname: 'William',
     },
     content: data,
@@ -110,7 +116,7 @@ const dummyPost = (data) => ({
 const dummyComment = (data) => ({
     id: shortId.generate(),
     User: {
-        id: 1,
+        id: "1@1.1",
         nickname: 'William',
     },
     content: data,

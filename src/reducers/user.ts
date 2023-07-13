@@ -1,3 +1,4 @@
+import shortId from "shortid";
 import {
     LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
@@ -106,10 +107,10 @@ export const logoutRequestAction = (): LogoutRequestAction => {
 const dummyUser = (data: UserState) => ({
     ...data,
     nickname: "Sy2tema",
-    id: 1,
-    Posts: [],
-    Followings: [],
-    Followers: [],
+    id: "1@1.1",
+    Posts: [{ id: "1" }],
+    Followings: [{ nickname: "건혁" }, { nickname: "William Lee" }],
+    Followers: [{ nickname: "건혁" }, { nickname: "William Lee" }],
 });
 
 const reducer = (state = initialState, action: UserAction): UserState => {
