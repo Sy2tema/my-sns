@@ -5,6 +5,7 @@ import {
 } from "../actions";
 import shortId from "shortid";
 import { produce } from "immer";
+import { faker } from "@faker-js/faker";
 
 interface PostState {
     mainPosts: {
@@ -115,6 +116,31 @@ const initialState: PostState = {
     removePostDone: false,
     removePostError: null,
 };
+
+faker.seed(123);
+
+initialState.mainPosts = initialState.mainPosts.concat(
+    Array(20).fill().map(() => ({
+        id: shortId.generate(),
+        User: {
+            id: shortId.generate(),
+            nickname: faker.internet.userName(),
+        },
+        content: faker.lorem.paragraph(),
+        Images: [{
+            id: shortId.generate(),
+            src: faker.image.urlLoremFlickr(),
+        }],
+        Comments: [{
+            id: shortId.generate(),
+            User: {
+                id: shortId.generate(),
+                nickname: faker.internet.userName(),
+            },
+            content: faker.lorem.sentence(),
+        }],
+    })),
+);
 
 export const addPost = (data: PostState) => ({
     type: ADD_POST_REQUEST,
