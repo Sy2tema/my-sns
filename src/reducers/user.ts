@@ -6,6 +6,7 @@ import {
     CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
     ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER
 } from "../actions";
+import { produce } from "immer";
 
 interface UserState {
     loginLoading: boolean;
@@ -123,106 +124,74 @@ const dummyUser = (data: UserState) => ({
 });
 
 const reducer = (state = initialState, action: UserAction): UserState => {
-    switch (action.type) {
-        case LOG_IN_REQUEST:
-            return {
-                ...state,
-                loginLoading: true,
-                loginError: null,
-                loginDone: false,
-            };
-        case LOG_IN_SUCCESS:
-            return {
-                ...state,
-                loginLoading: false,
-                loginDone: true,
-                ownUser: dummyUser(action.data),
-            }
-        case LOG_IN_FAILURE:
-            return {
-                ...state,
-                loginLoading: false,
-                loginError: action.error,
-            }
-        case LOG_OUT_REQUEST:
-            return {
-                ...state,
-                logoutLoading: true,
-                logoutError: null,
-                logoutDone: false,
-            };
-        case LOG_OUT_SUCCESS:
-            return {
-                ...state,
-                logoutLoading: false,
-                logoutDone: true,
-                ownUser: null,
-            };
-        case LOG_OUT_FAILURE:
-            return {
-                ...state,
-                logoutLoading: false,
-                logoutError: action.error,
-            };
-        case SIGN_UP_REQUEST:
-            return {
-                ...state,
-                signupLoading: true,
-                signupError: null,
-                signupDone: false,
-            };
-        case SIGN_UP_SUCCESS:
-            return {
-                ...state,
-                signupLoading: false,
-                signupDone: true,
-                ownUser: null,
-            };
-        case SIGN_UP_FAILURE:
-            return {
-                ...state,
-                signupLoading: false,
-                signupError: action.error,
-            };
-        case CHANGE_NICKNAME_REQUEST:
-            return {
-                ...state,
-                changeNicknameLoading: true,
-                changeNicknameError: null,
-                changeNicknameDone: false,
-            };
-        case CHANGE_NICKNAME_SUCCESS:
-            return {
-                ...state,
-                changeNicknameLoading: false,
-                changeNicknameDone: true,
-                ownUser: null,
-            };
-        case CHANGE_NICKNAME_FAILURE:
-            return {
-                ...state,
-                changeNicknameLoading: false,
-                changeNicknameError: action.error,
-            };
-        case ADD_POST_TO_CURRENT_USER:
-            return {
-                ...state,
-                ownUser: {
-                    ...state.ownUser,
-                    Posts: [{ id: action.data }, ...state.ownUser?.Posts],
-                },
-            };
-        case REMOVE_POST_FROM_CURRENT_USER:
-            return {
-                ...state,
-                ownUser: {
-                    ...state.ownUser,
-                    Posts: state.ownUser?.Posts.filter((value) => value.id !== action.data),
-                },
-            };
-        default:
-            return state;
-    }
+    return produce(state, (draft) => {
+        switch (action.type) {
+            case LOG_IN_REQUEST:
+                draft.loginLoading = true;
+                draft.loginError = null;
+                draft.loginDone = false;
+                break;
+            case LOG_IN_SUCCESS:
+                draft.loginLoading = false;
+                draft.loginDone = true;
+                draft.ownUser = dummyUser(action.data);
+                break;
+            case LOG_IN_FAILURE:
+                draft.loginLoading = false;
+                draft.loginError = action.error;
+                break;
+            case LOG_OUT_REQUEST:
+                draft.logoutLoading = true;
+                draft.logoutError = null;
+                draft.logoutDone = false;
+                break;
+            case LOG_OUT_SUCCESS:
+                draft.logoutLoading = false;
+                draft.logoutDone = true;
+                draft.ownUser = null;
+                break;
+            case LOG_OUT_FAILURE:
+                draft.logoutLoading = false;
+                draft.logoutError = action.error;
+                break;
+            case SIGN_UP_REQUEST:
+                draft.signupLoading = true;
+                draft.signupError = null;
+                draft.signupDone = false;
+                break;
+            case SIGN_UP_SUCCESS:
+                draft.signupLoading = false;
+                draft.signupDone = true;
+                draft.ownUser = null;
+                break;
+            case SIGN_UP_FAILURE:
+                draft.signupLoading = false;
+                draft.signupError = action.error;
+                break;
+            case CHANGE_NICKNAME_REQUEST:
+                draft.changeNicknameLoading = true;
+                draft.changeNicknameError = null;
+                draft.changeNicknameDone = false;
+                break;
+            case CHANGE_NICKNAME_SUCCESS:
+                draft.changeNicknameDone = true;
+                draft.changeNicknameLoading = false;
+                draft.ownUser = null;
+                break;
+            case CHANGE_NICKNAME_FAILURE:
+                draft.changeNicknameLoading = false;
+                draft.changeNicknameError = action.error;
+                break;
+            case ADD_POST_TO_CURRENT_USER:
+                draft.ownUser.Posts.unshift({ id: action.data });
+                break;
+            case REMOVE_POST_FROM_CURRENT_USER:
+                draft.ownUser.Posts = draft.ownUser.Posts.filter((value) => value.id !== action.data);
+                break;
+            default:
+                break;
+        }
+    });
 };
 
 export default reducer;
