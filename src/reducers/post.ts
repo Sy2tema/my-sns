@@ -1,7 +1,7 @@
 import {
     ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
     ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
-    REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE
+    REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS
 } from "../actions";
 import shortId from "shortid";
 import { produce } from "immer";
@@ -29,6 +29,7 @@ interface PostState {
         }[];
     }[];
     imagePaths: string[];
+    hasMorePost: boolean;
     addPostLoading: boolean;
     addPostDone: boolean;
     addPostError: boolean | string | null;
@@ -38,10 +39,14 @@ interface PostState {
     removePostLoading: boolean;
     removePostDone: boolean;
     removePostError: boolean | string | null;
+    loadPostLoading: boolean;
+    loadPostDone: boolean;
+    loadPostError: boolean | string | null;
 }
 
 type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction
     | AddCommentRequestAction | AddCommentSuccessAction | AddCommentFailureAction
+    | LoadPostRequestAction | LoadPostSuccessAction | LoadPostFailureAction
     | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction;
 
 interface AddPostRequestAction {
@@ -77,6 +82,17 @@ interface RemovePostFailureAction {
     type: typeof REMOVE_POST_FAILURE,
     error: string,
 }
+interface LoadPostRequestAction {
+    type: typeof LOAD_POST_REQUEST,
+}
+interface LoadPostSuccessAction {
+    type: typeof LOAD_POST_SUCCESS,
+    data: PostState,
+}
+interface LoadPostFailureAction {
+    type: typeof LOAD_POST_FAILURE,
+    error: string,
+}
 
 const initialState: PostState = {
     mainPosts: [{
@@ -106,6 +122,7 @@ const initialState: PostState = {
         }],
     }],
     imagePaths: [],
+    hasMorePost: true,
     addPostLoading: false,
     addPostDone: false,
     addPostError: null,
@@ -115,32 +132,35 @@ const initialState: PostState = {
     removePostLoading: false,
     removePostDone: false,
     removePostError: null,
+    loadPostLoading: false,
+    loadPostDone: false,
+    loadPostError: null,
 };
 
 faker.seed(123);
 
-initialState.mainPosts = initialState.mainPosts.concat(
-    Array(20).fill().map(() => ({
+export const generateDummyPost = (number: number) => Array(number).fill().map(() => ({
+    id: shortId.generate(),
+    User: {
+        id: shortId.generate(),
+        nickname: faker.internet.userName(),
+    },
+    content: faker.lorem.paragraph(),
+    Images: [{
+        id: shortId.generate(),
+        src: faker.image.urlLoremFlickr(),
+    }],
+    Comments: [{
         id: shortId.generate(),
         User: {
             id: shortId.generate(),
             nickname: faker.internet.userName(),
         },
-        content: faker.lorem.paragraph(),
-        Images: [{
-            id: shortId.generate(),
-            src: faker.image.urlLoremFlickr(),
-        }],
-        Comments: [{
-            id: shortId.generate(),
-            User: {
-                id: shortId.generate(),
-                nickname: faker.internet.userName(),
-            },
-            content: faker.lorem.sentence(),
-        }],
-    })),
-);
+        content: faker.lorem.sentence(),
+    }],
+}));
+
+//initialState.mainPosts = initialState.mainPosts.concat(generateDummyPost(10));
 
 export const addPost = (data: PostState) => ({
     type: ADD_POST_REQUEST,
@@ -217,6 +237,22 @@ const reducer = (state = initialState, action: PostAction): PostState => {
             case REMOVE_POST_FAILURE:
                 draft.removePostLoading = false;
                 draft.removePostError = action.error;
+                break;
+            case LOAD_POST_REQUEST:
+                draft.loadPostLoading = true;
+                draft.loadPostDone = false;
+                draft.loadPostError = null;
+                break;
+            case LOAD_POST_SUCCESS:
+                // draft와 action을 바꾸면 최신 게시글이 가장 위로 가도록 수정할 수 있다.
+                draft.mainPosts = draft.mainPosts.concat(action.data);
+                draft.loadPostLoading = false;
+                draft.loadPostDone = true;
+                draft.hasMorePost = draft.mainPosts.length < 50;
+                break;
+            case LOAD_POST_FAILURE:
+                draft.loadPostLoading = false;
+                draft.loadPostError = action.error;
                 break;
             default:
                 break;
