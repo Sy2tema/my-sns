@@ -4,7 +4,7 @@ import {
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
     SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE,
     CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
-    ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER
+    ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS
 } from "../actions";
 import { produce } from "immer";
 
@@ -21,7 +21,19 @@ interface UserState {
     changeNicknameLoading: boolean;
     changeNicknameDone: boolean;
     changeNicknameError: boolean | string | null;
-    ownUser: {} | null;
+    followLoading: boolean;
+    followDone: boolean;
+    followError: boolean | string | null;
+    unfollowLoading: boolean;
+    unfollowDone: boolean;
+    unfollowError: boolean | string | null;
+    ownUser: {
+        nickname: string;
+        id: string;
+        Posts: [];
+        Followings: [];
+        Followers: [];
+    } | null;
     signUpData: {};
     loginData: {};
 }
@@ -30,6 +42,8 @@ type UserAction = LoginRequestAction | LoginSuccessAction | LoginFailureAction
     | LogoutRequestAction | LogoutSuccessAction | LogoutFailureAction
     | SignupRequestAction | SignupSuccessAction | SignupFailureAction
     | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction
+    | FollowRequestAction | FollowSuccessAction | FollowFailureAction
+    | UnfollowRequestAction | UnfollowSuccessAction | UnfollowFailureAction
     | AddPostToCurrentUserAction | RemovePostFromCurrentUserAction;
 
 interface LoginRequestAction {
@@ -66,12 +80,38 @@ interface SignupFailureAction {
 }
 interface ChangeNicknameRequestAction {
     type: typeof CHANGE_NICKNAME_REQUEST,
+    data: UserState,
 }
 interface ChangeNicknameSuccessAction {
     type: typeof CHANGE_NICKNAME_SUCCESS,
+    data: UserState,
 }
 interface ChangeNicknameFailureAction {
     type: typeof CHANGE_NICKNAME_FAILURE,
+    error: string,
+}
+interface FollowRequestAction {
+    type: typeof FOLLOW_REQUEST,
+    data: UserState,
+}
+interface FollowSuccessAction {
+    type: typeof FOLLOW_SUCCESS,
+    data: UserState,
+}
+interface FollowFailureAction {
+    type: typeof FOLLOW_FAILURE,
+    error: string,
+}
+interface UnfollowRequestAction {
+    type: typeof UNFOLLOW_REQUEST,
+    data: UserState,
+}
+interface UnfollowSuccessAction {
+    type: typeof UNFOLLOW_SUCCESS,
+    data: UserState,
+}
+interface UnfollowFailureAction {
+    type: typeof UNFOLLOW_FAILURE,
     error: string,
 }
 interface AddPostToCurrentUserAction {
@@ -95,6 +135,12 @@ const initialState: UserState = {
     changeNicknameLoading: false,
     changeNicknameDone: false,
     changeNicknameError: null,
+    followLoading: false,
+    followDone: false,
+    followError: null,
+    unfollowLoading: false,
+    unfollowDone: false,
+    unfollowError: null,
     ownUser: null,
     signUpData: {},
     loginData: {},
@@ -181,6 +227,36 @@ const reducer = (state = initialState, action: UserAction): UserState => {
             case CHANGE_NICKNAME_FAILURE:
                 draft.changeNicknameLoading = false;
                 draft.changeNicknameError = action.error;
+                break;
+            case FOLLOW_REQUEST:
+                draft.followLoading = true;
+                draft.followError = null;
+                draft.followDone = false;
+                break;
+            case FOLLOW_SUCCESS:
+                draft.followDone = true;
+                draft.followLoading = false;
+                draft.ownUser?.Followings.push({ id: action.data });
+                break;
+            case FOLLOW_FAILURE:
+                draft.followLoading = false;
+                draft.followError = action.error;
+                break;
+            case UNFOLLOW_REQUEST:
+                draft.unfollowLoading = true;
+                draft.unfollowError = null;
+                draft.unfollowDone = false;
+                break;
+            case UNFOLLOW_SUCCESS:
+                draft.unfollowDone = true;
+                draft.unfollowLoading = false;
+                if (draft.ownUser) {
+                    draft.ownUser.Followings = draft.ownUser.Followings.filter((value) => value.id !== action.data);
+                }
+                break;
+            case UNFOLLOW_FAILURE:
+                draft.unfollowLoading = false;
+                draft.unfollowError = action.error;
                 break;
             case ADD_POST_TO_CURRENT_USER:
                 draft.ownUser.Posts.unshift({ id: action.data });
