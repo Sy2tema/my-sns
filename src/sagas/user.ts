@@ -1,9 +1,35 @@
-import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
-import { LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from "../actions";
+import axios, { AxiosError } from "axios";
+import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
+import {
+    LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
+    LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
+    SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE,
+    FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
+    UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE
+} from "../actions";
+import { AnyAction } from "redux";
+
+interface RequestData {
+    email: string;
+    username: string;
+    password: string;
+}
+
+interface SignupAction extends AnyAction {
+    data: RequestData;
+}
+
+interface ApiResponse {
+    data: RequestData;
+    status: number;
+}
+
+function isAxiosError(error: any): error is AxiosError {
+    return (error as AxiosError).isAxiosError !== undefined;
+}
 
 function loginAPI(data) {
-    return axios.post('/api/login', data);
+    return axios.post('/login', data);
 }
 
 function* login(action) {
@@ -23,7 +49,7 @@ function* login(action) {
 }
 
 function logoutAPI() {
-    return axios.post('/api/logout');
+    return axios.post('/logout');
 }
 
 function* logout() {
@@ -41,27 +67,41 @@ function* logout() {
     }
 }
 
-function signupAPI() {
-    return axios.post('/api/signup');
+function signupAPI(data: SignupAction) {
+    return axios.post('http://192.168.36.128:3065/user', data);
 }
 
-function* signup() {
+function* signup(action: SignupAction) {
     try {
-        // const result = yield call(signupAPI);
+        const result: ApiResponse = yield call(signupAPI, action.data);
         yield delay(1000);
         yield put({
             type: SIGN_UP_SUCCESS,
         });
     } catch (err) {
-        yield put({
-            type: SIGN_UP_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err) && err.response) {
+            yield put({
+                type: SIGN_UP_FAILURE,
+                error: err.response.data,
+            })
+        } else if (isAxiosError(err)) {
+            // Axios 오류지만 response가 없는 경우 (예: 네트워크 에러)
+            yield put({
+                type: SIGN_UP_FAILURE,
+                error: "네트워크 오류 또는 서버에서 응답이 없는 오류입니다.",
+            });
+        } else {
+            // axios가 아닌 다른에러케이스
+            yield put({
+                type: SIGN_UP_FAILURE,
+                error: err.response.data,
+            })
+        }
     }
 }
 
 function followAPI() {
-    return axios.post('/api/follow');
+    return axios.post('/follow');
 }
 
 function* follow(action) {
@@ -81,7 +121,7 @@ function* follow(action) {
 }
 
 function unfollowAPI() {
-    return axios.post('/api/unfollow');
+    return axios.post('/unfollow');
 }
 
 function* unfollow(action) {

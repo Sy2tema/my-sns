@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Head from "next/head";
 import AppLayout from "../components/AppLayout";
 import styled from "styled-components";
@@ -8,6 +8,7 @@ import useInput from "../hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
 import { SIGN_UP_REQUEST } from "../actions";
 import { RootState } from "../reducers";
+import Router from "next/router";
 
 const ErrorMessage = styled.div`
     color: red;
@@ -15,10 +16,22 @@ const ErrorMessage = styled.div`
 
 const Signup = () => {
     const dispatch = useDispatch();
-    const { signupLoading } = useSelector((state: RootState) => state.user);
+    const { signupLoading, signupDone, signupError } = useSelector((state: RootState) => state.user);
+    useEffect(() => {
+        if (signupDone) {
+            Router.push('/');
+        }
+    }, [signupDone]);
+
+    useEffect(() => {
+        if (signupError) {
+            // state를 이용해 화면에 직접 그릴 수 있음
+            alert(signupError);
+        }
+    }, [signupError]);
+
     const [email, onChangeEmail] = useInput("");
     const [nickname, onChangeNickname] = useInput("");
-
     // 비밀번호 중복 체크 부분은 커스텀 훅을 사용하지 않음
     const [password, onChangePassword] = useInput("");
     const [passwordCheck, setPasswordCheck] = useState("");
@@ -47,7 +60,7 @@ const Signup = () => {
             type: SIGN_UP_REQUEST,
             data: { email, nickname, password },
         });
-    }, [email, nickname, password, passwordCheck, term]);
+    }, [dispatch, email, nickname, password, passwordCheck, term]);
 
     return (
         <AppLayout>
