@@ -19,6 +19,10 @@ interface SignupAction extends AnyAction {
     data: RequestData;
 }
 
+interface LoginAction extends AnyAction {
+    data: RequestData;
+}
+
 interface ApiResponse {
     data: RequestData;
     status: number;
@@ -28,17 +32,17 @@ function isAxiosError(error: any): error is AxiosError {
     return (error as AxiosError).isAxiosError !== undefined;
 }
 
-function loginAPI(data) {
-    return axios.post('/login', data);
+function loginAPI(data: LoginAction) {
+    return axios.post('/user/login', data);
 }
 
-function* login(action) {
+function* login(action: LoginAction) {
     try {
-        // const result = yield call(loginAPI, action.data);
+        const result: ApiResponse = yield call(loginAPI, action.data);
         yield delay(1000);
         yield put({
             type: LOG_IN_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
         yield put({
@@ -54,8 +58,8 @@ function logoutAPI() {
 
 function* logout() {
     try {
-        // const result = yield call(logoutAPI);
-        yield delay(1000);
+        const result: ApiResponse = yield call(logoutAPI);
+
         yield put({
             type: LOG_OUT_SUCCESS,
         });
@@ -68,13 +72,13 @@ function* logout() {
 }
 
 function signupAPI(data: SignupAction) {
-    return axios.post('http://192.168.36.128:3065/user', data);
+    return axios.post('/user', data);
 }
 
 function* signup(action: SignupAction) {
     try {
         const result: ApiResponse = yield call(signupAPI, action.data);
-        yield delay(1000);
+
         yield put({
             type: SIGN_UP_SUCCESS,
         });
