@@ -4,9 +4,19 @@ import AppLayout from "../components/AppLayout";
 import NicknameEditForm from "../components/NicknameEditForm";
 import FollowList from "../components/FollowList";
 import { RootState } from "../reducers";
+import { useEffect } from "react";
+import Router from "next/router";
 
 const Profile = () => {
     const { ownUser } = useSelector((state: RootState) => state.user);
+
+    useEffect(() => {
+        if (ownUser && ownUser.id) {
+            Router.replace("/");
+        }
+    }, [ownUser && ownUser.id]); // ownUser?.id로 한번에 써도 된다.
+
+    if (!ownUser) return null;
 
     return (
         <>

@@ -1,6 +1,6 @@
 import { Button, Form, Input } from "antd";
 import Link from "next/link";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import styled from 'styled-components';
 import useInput from "../hooks/useInput";
 import { useRouter } from "next/router";
@@ -18,14 +18,19 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
     const dispatch = useDispatch();
-    const { loginLoading } = useSelector((state: RootState) => state.user);
+    const { loginLoading, loginError } = useSelector((state: RootState) => state.user);
     const [email, onChangeEmail] = useInput("");
     const [password, onChangePassword] = useInput("");
     const router = useRouter();
 
+    useEffect(() => {
+        if (loginError) {
+            alert(loginError);
+        }
+    }, [loginError]);
+
     // ButtonWrapper와 같은 기능을 한다.
     // const style = useMemo(() => ({ marginTop: 10 }), []);
-
     const onSubmitForm = useCallback(() => {
         dispatch(loginRequestAction({ email, password }));
     }, [dispatch, email, password, router]);

@@ -180,7 +180,7 @@ const reducer = (state = initialState, action: UserAction): UserState => {
             case LOG_IN_SUCCESS:
                 draft.loginLoading = false;
                 draft.loginDone = true;
-                draft.ownUser = dummyUser(action.data);
+                draft.ownUser = action.data;
                 break;
             case LOG_IN_FAILURE:
                 draft.loginLoading = false;

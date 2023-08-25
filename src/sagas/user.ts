@@ -53,12 +53,12 @@ function* login(action: LoginAction) {
 }
 
 function logoutAPI() {
-    return axios.post('/logout');
+    return axios.post('/user/logout');
 }
 
 function* logout() {
     try {
-        const result: ApiResponse = yield call(logoutAPI);
+        yield call(logoutAPI);
 
         yield put({
             type: LOG_OUT_SUCCESS,
