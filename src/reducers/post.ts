@@ -36,18 +36,15 @@ interface PostData {
         id: string;
         src: string;
     }[];
-    Comments: {
-        id: string;
-        User: {
-            id: string;
-            nickname: string;
-        };
-        content: string;
-    }[];
+    Comments: CommentData[];
 }
 
 interface CommentData {
-    postId: string;
+    PostId: string;
+    User: {
+        id: string;
+        nickname: string;
+    }
     content: string;
 }
 
@@ -102,32 +99,7 @@ interface LoadPostFailureAction {
 }
 
 const initialState: PostState = {
-    mainPosts: [{
-        id: "1",
-        User: {
-            id: "1@1.1",
-            nickname: 'William'
-        },
-        content: '첫 번째 게시글 #해시태그 #익스프레스',
-        Images: [{
-            id: shortId.generate(),
-            src: 'https://cdn.pixabay.com/photo/2023/05/27/11/12/naxos-8021321_1280.jpg'
-        }, {
-            id: shortId.generate(),
-            src: 'https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg'
-        }, {
-            id: shortId.generate(),
-            src: 'https://cdn.pixabay.com/photo/2023/05/07/09/59/mountains-7976041_1280.jpg'
-        }],
-        Comments: [{
-            id: shortId.generate(),
-            User: {
-                id: shortId.generate(),
-                nickname: '답변자',
-            },
-            content: '샘플 답글',
-        }],
-    }],
+    mainPosts: [],
     imagePaths: [],
     hasMorePost: true,
     addPostLoading: false,
@@ -179,26 +151,6 @@ export const addComment = (data: PostState) => ({
     data,
 })
 
-const dummyPost = (data) => ({
-    id: data.id,
-    User: {
-        id: "1@1.1",
-        nickname: 'William',
-    },
-    content: data.content,
-    Images: [],
-    Comments: [],
-});
-
-const dummyComment = (data) => ({
-    id: shortId.generate(),
-    User: {
-        id: "1@1.1",
-        nickname: 'William',
-    },
-    content: data,
-});
-
 const reducer = (state = initialState, action: PostAction): PostState => {
     return produce(state, (draft) => {
         switch (action.type) {
@@ -208,7 +160,7 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.addPostError = null;
                 break;
             case ADD_POST_SUCCESS:
-                draft.mainPosts.unshift(dummyPost(action.data));
+                draft.mainPosts.unshift(action.data);
                 draft.addPostLoading = false;
                 draft.addPostDone = true;
                 break;
@@ -222,8 +174,8 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.addCommentError = null;
                 break;
             case ADD_COMMENT_SUCCESS:
-                const post = draft.mainPosts.find((value) => value.id === action.data.postId);
-                post?.Comments.unshift(dummyComment(action.data.content));
+                const post = draft.mainPosts.find((value) => value.id === action.data.PostId);
+                post?.Comments.unshift(action.data);
                 draft.addCommentLoading = false;
                 draft.addCommentDone = true;
                 break;

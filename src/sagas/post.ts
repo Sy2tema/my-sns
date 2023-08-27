@@ -6,11 +6,11 @@ import {
     ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER,
     REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE
 } from "../actions";
-import shortId from "shortid";
 import { AnyAction } from "redux";
 
 interface RequestData {
     postId?: number;
+    id: number;
     // @Todo: RequestData에 넣어줄 속성들 지정해주기
 }
 
@@ -24,24 +24,20 @@ interface ApiResponse {
 }
 
 function addPostAPI(data: RequestData) {
-    return axios.post('/api/post', data);
+    return axios.post('/post', { content: data });
 }
 
 function* addPost(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(addPostAPI, action.data);
 
-        const id = shortId.generate();
         yield put({
             type: ADD_POST_SUCCESS,
-            data: {
-                id,
-                content: result.data,
-            },
+            data: result.data,
         });
         yield put({
             type: ADD_POST_TO_CURRENT_USER,
-            data: id,
+            data: result.data.id,
         })
     } catch (err) {
         if (isAxiosError(err)) {
@@ -70,7 +66,7 @@ function* addPost(action: RequestAction) {
 }
 
 function removePostAPI(data: RequestData) {
-    return axios.delete('/api/post', data);
+    return axios.delete('/post', data);
 }
 
 function* removePost(action: RequestAction) {
@@ -112,7 +108,7 @@ function* removePost(action: RequestAction) {
 }
 
 function loadPostAPI(data: RequestData) {
-    return axios.get('/api/post', data);
+    return axios.get('/post', data);
 }
 
 function* loadPost(action: RequestAction) {
@@ -150,7 +146,7 @@ function* loadPost(action: RequestAction) {
 }
 
 function addCommentAPI(data: RequestData) {
-    return axios.post(`/api/${data.postId}/comment`, data);
+    return axios.post(`/post/${data.postId}/comment`, data);
 }
 
 function* addComment(action: RequestAction) {

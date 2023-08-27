@@ -16,14 +16,14 @@ const CommentForm = ({ post }) => {
         if (addCommentDone) {
             setCommentText("");
         }
-    }, [addCommentDone]);
+    }, [setCommentText, addCommentDone]);
 
     const onSubmitComment = useCallback(() => {
         dispatch({
             type: ADD_COMMENT_REQUEST,
             data: { content: commentText, postId: post.id, userId: id },
         });
-    }, [commentText, id]);
+    }, [dispatch, commentText, id, post.id]);
 
     return (
         <Form onFinish={onSubmitComment}>
