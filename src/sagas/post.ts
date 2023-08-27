@@ -1,5 +1,5 @@
-import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
+import axios, { isAxiosError } from "axios";
+import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import {
     ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
     ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
@@ -7,22 +7,36 @@ import {
     REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE
 } from "../actions";
 import shortId from "shortid";
-import { generateDummyPost } from "../reducers/post";
+import { AnyAction } from "redux";
 
-function addPostAPI(data) {
+interface RequestData {
+    postId?: number;
+    // @Todo: RequestData에 넣어줄 속성들 지정해주기
+}
+
+interface RequestAction extends AnyAction {
+    data: RequestData;
+}
+
+interface ApiResponse {
+    data: RequestData;
+    status: number;
+}
+
+function addPostAPI(data: RequestData) {
     return axios.post('/api/post', data);
 }
 
-function* addPost(action) {
+function* addPost(action: RequestAction) {
     try {
-        // const result = yield call(addPostAPI, action.data);
-        yield delay(1000);
+        const result: ApiResponse = yield call(addPostAPI, action.data);
+
         const id = shortId.generate();
         yield put({
             type: ADD_POST_SUCCESS,
             data: {
                 id,
-                content: action.data,
+                content: result.data,
             },
         });
         yield put({
@@ -30,74 +44,146 @@ function* addPost(action) {
             data: id,
         })
     } catch (err) {
-        yield put({
-            type: ADD_POST_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: ADD_POST_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: ADD_POST_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: ADD_POST_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
-function removePostAPI(data) {
+function removePostAPI(data: RequestData) {
     return axios.delete('/api/post', data);
 }
 
-function* removePost(action) {
+function* removePost(action: RequestAction) {
     try {
-        // const result = yield call(addPostAPI, action.data);
-        yield delay(1000);
+        const result: ApiResponse = yield call(removePostAPI, action.data);
+
         yield put({
             type: REMOVE_POST_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
         yield put({
             type: REMOVE_POST_FROM_CURRENT_USER,
-            data: action.data,
+            data: result.data,
         })
     } catch (err) {
-        yield put({
-            type: REMOVE_POST_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: REMOVE_POST_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: REMOVE_POST_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: REMOVE_POST_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
-function loadPostAPI(data) {
+function loadPostAPI(data: RequestData) {
     return axios.get('/api/post', data);
 }
 
-function* loadPost(action) {
+function* loadPost(action: RequestAction) {
     try {
-        // const result = yield call(addPostAPI, action.data);
-        yield delay(1000);
+        const result: ApiResponse = yield call(loadPostAPI, action.data);
+
         yield put({
             type: LOAD_POST_SUCCESS,
-            data: generateDummyPost(10),
+            data: result.data,
         });
     } catch (err) {
-        yield put({
-            type: LOAD_POST_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: LOAD_POST_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: LOAD_POST_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: LOAD_POST_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
-function addCommentAPI(data) {
+function addCommentAPI(data: RequestData) {
     return axios.post(`/api/${data.postId}/comment`, data);
 }
 
-function* addComment(action) {
+function* addComment(action: RequestAction) {
     try {
-        // const result = yield call(addCommentAPI, action.data);
-        yield delay(1000);
+        const result: ApiResponse = yield call(addCommentAPI, action.data);
+
         yield put({
             type: ADD_COMMENT_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
-        yield put({
-            type: ADD_COMMENT_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: ADD_COMMENT_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: ADD_COMMENT_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: ADD_COMMENT_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 

@@ -1,4 +1,3 @@
-import shortId from "shortid";
 import {
     LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
@@ -6,7 +5,15 @@ import {
     CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
     ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS
 } from "../actions";
-import { produce } from "immer";
+import { produce, Draft } from "immer";
+
+interface User {
+    nickname: string;
+    id: string;
+    Posts: Array<{ id: string }>;
+    Followings: Array<{ id: string }>;
+    Followers: Array<{ id: string }>;
+}
 
 interface UserState {
     loginLoading: boolean;
@@ -27,13 +34,7 @@ interface UserState {
     unfollowLoading: boolean;
     unfollowDone: boolean;
     unfollowError: boolean | string | null;
-    ownUser: {
-        nickname: string;
-        id: string;
-        Posts: [];
-        Followings: [];
-        Followers: [];
-    } | null;
+    ownUser: User | null;
     signUpData: {};
     loginData: {};
 }
@@ -160,17 +161,8 @@ export const logoutRequestAction = (): LogoutRequestAction => {
     }
 };
 
-const dummyUser = (data: UserState) => ({
-    ...data,
-    nickname: "Sy2tema",
-    id: "1@1.1",
-    Posts: [{ id: "1" }],
-    Followings: [{ nickname: "건혁" }, { nickname: "William Lee" }],
-    Followers: [{ nickname: "건혁" }, { nickname: "William Lee" }],
-});
-
 const reducer = (state = initialState, action: UserAction): UserState => {
-    return produce(state, (draft) => {
+    return produce(state, (draft: Draft<UserState>) => {
         switch (action.type) {
             case LOG_IN_REQUEST:
                 draft.loginLoading = true;
@@ -259,10 +251,12 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.unfollowError = action.error;
                 break;
             case ADD_POST_TO_CURRENT_USER:
-                draft.ownUser.Posts.unshift({ id: action.data });
+                if (draft.ownUser)
+                    draft.ownUser.Posts.unshift({ id: action.data });
                 break;
             case REMOVE_POST_FROM_CURRENT_USER:
-                draft.ownUser.Posts = draft.ownUser.Posts.filter((value) => value.id !== action.data);
+                if (draft.ownUser)
+                    draft.ownUser.Posts = draft.ownUser.Posts.filter((value) => value.id !== action.data);
                 break;
             default:
                 break;

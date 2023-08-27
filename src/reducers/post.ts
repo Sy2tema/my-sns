@@ -8,26 +8,7 @@ import { produce } from "immer";
 import { faker } from "@faker-js/faker";
 
 interface PostState {
-    mainPosts: {
-        id: string;
-        User: {
-            id: string;
-            nickname: string;
-        };
-        content: string;
-        Images: {
-            id: string;
-            src: string;
-        }[];
-        Comments: {
-            id: string;
-            User: {
-                id: string;
-                nickname: string;
-            };
-            content: string;
-        }[];
-    }[];
+    mainPosts: PostData[];
     imagePaths: string[];
     hasMorePost: boolean;
     addPostLoading: boolean;
@@ -42,6 +23,32 @@ interface PostState {
     loadPostLoading: boolean;
     loadPostDone: boolean;
     loadPostError: boolean | string | null;
+}
+
+interface PostData {
+    id: string;
+    User: {
+        id: string;
+        nickname: string;
+    };
+    content: string;
+    Images: {
+        id: string;
+        src: string;
+    }[];
+    Comments: {
+        id: string;
+        User: {
+            id: string;
+            nickname: string;
+        };
+        content: string;
+    }[];
+}
+
+interface CommentData {
+    postId: string;
+    content: string;
 }
 
 type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction
@@ -65,7 +72,7 @@ interface AddCommentRequestAction {
 }
 interface AddCommentSuccessAction {
     type: typeof ADD_COMMENT_SUCCESS,
-    data: PostState,
+    data: CommentData,
 }
 interface AddCommentFailureAction {
     type: typeof ADD_COMMENT_FAILURE,
@@ -76,7 +83,7 @@ interface RemovePostRequestAction {
 }
 interface RemovePostSuccessAction {
     type: typeof REMOVE_POST_SUCCESS,
-    data: string,
+    data: string; // postId
 }
 interface RemovePostFailureAction {
     type: typeof REMOVE_POST_FAILURE,
@@ -87,7 +94,7 @@ interface LoadPostRequestAction {
 }
 interface LoadPostSuccessAction {
     type: typeof LOAD_POST_SUCCESS,
-    data: PostState,
+    data: PostData[],
 }
 interface LoadPostFailureAction {
     type: typeof LOAD_POST_FAILURE,

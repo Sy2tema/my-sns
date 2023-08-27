@@ -15,11 +15,7 @@ interface RequestData {
     password: string;
 }
 
-interface SignupAction extends AnyAction {
-    data: RequestData;
-}
-
-interface LoginAction extends AnyAction {
+interface RequestAction extends AnyAction {
     data: RequestData;
 }
 
@@ -32,11 +28,11 @@ function isAxiosError(error: any): error is AxiosError {
     return (error as AxiosError).isAxiosError !== undefined;
 }
 
-function loginAPI(data: LoginAction) {
+function loginAPI(data: RequestData) {
     return axios.post('/user/login', data);
 }
 
-function* login(action: LoginAction) {
+function* login(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(loginAPI, action.data);
         yield delay(1000);
@@ -45,10 +41,28 @@ function* login(action: LoginAction) {
             data: result.data,
         });
     } catch (err) {
-        yield put({
-            type: LOG_IN_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: LOG_IN_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: LOG_IN_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: LOG_IN_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
@@ -64,83 +78,141 @@ function* logout() {
             type: LOG_OUT_SUCCESS,
         });
     } catch (err) {
-        yield put({
-            type: LOG_OUT_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: LOG_OUT_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: LOG_OUT_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: LOG_OUT_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
-function signupAPI(data: SignupAction) {
+function signupAPI(data: RequestData) {
     return axios.post('/user', data);
 }
 
-function* signup(action: SignupAction) {
+function* signup(action: RequestAction) {
     try {
-        const result: ApiResponse = yield call(signupAPI, action.data);
+        yield call(signupAPI, action.data);
 
         yield put({
             type: SIGN_UP_SUCCESS,
         });
     } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            yield put({
-                type: SIGN_UP_FAILURE,
-                error: err.response.data,
-            })
-        } else if (isAxiosError(err)) {
-            // Axios 오류지만 response가 없는 경우 (예: 네트워크 에러)
-            yield put({
-                type: SIGN_UP_FAILURE,
-                error: "네트워크 오류 또는 서버에서 응답이 없는 오류입니다.",
-            });
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: SIGN_UP_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: SIGN_UP_FAILURE,
+                    error: "No server response."
+                });
+            }
         } else {
-            // axios가 아닌 다른에러케이스
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
             yield put({
                 type: SIGN_UP_FAILURE,
-                error: err.response.data,
-            })
+                error: "An unknown error occurred."
+            });
         }
     }
 }
 
-function followAPI() {
-    return axios.post('/follow');
+function followAPI(data: RequestData) {
+    return axios.post('/user/follow');
 }
 
-function* follow(action) {
+function* follow(action: RequestAction) {
     try {
-        // const result = yield call(followAPI);
-        yield delay(1000);
+        const result: ApiResponse = yield call(followAPI, action.data);
+
         yield put({
             type: FOLLOW_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
-        yield put({
-            type: FOLLOW_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: FOLLOW_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: FOLLOW_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: FOLLOW_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
-function unfollowAPI() {
-    return axios.post('/unfollow');
+function unfollowAPI(data: RequestData) {
+    return axios.post('/user/unfollow');
 }
 
-function* unfollow(action) {
+function* unfollow(action: RequestAction) {
     try {
-        // const result = yield call(unfollowAPI);
-        yield delay(1000);
+        const result: ApiResponse = yield call(unfollowAPI, action.data);
+
         yield put({
             type: UNFOLLOW_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
-        yield put({
-            type: UNFOLLOW_FAILURE,
-            error: err.response.data,
-        })
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: UNFOLLOW_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: UNFOLLOW_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: UNFOLLOW_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
     }
 }
 
