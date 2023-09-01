@@ -145,7 +145,7 @@ function* loadPost(action: RequestAction) {
     }
 }
 
-function addCommentAPI(data: RequestData) {
+function addCommentAPI(data: RequestData) { // POST post/1/comment
     return axios.post(`/post/${data.postId}/comment`, data);
 }
 

@@ -1,9 +1,12 @@
 import {
+    LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOAD_MY_INFO_FAILURE,
     LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
     SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE,
     CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
-    ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS
+    ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER,
+    FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
+    UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
 } from "../actions";
 import { produce, Draft } from "immer";
 
@@ -16,6 +19,9 @@ interface User {
 }
 
 interface UserState {
+    loadMyInfoLoading: boolean;
+    loadMyInfoDone: boolean;
+    loadMyInfoError: boolean | string | null;
     loginLoading: boolean;
     loginDone: boolean;
     loginError: boolean | string | null;
@@ -39,7 +45,8 @@ interface UserState {
     loginData: {};
 }
 
-type UserAction = LoginRequestAction | LoginSuccessAction | LoginFailureAction
+type UserAction = LoadMyInfoRequestAction | LoadMyInfoSuccessAction | LoadMyInfoFailureAction
+    | LoginRequestAction | LoginSuccessAction | LoginFailureAction
     | LogoutRequestAction | LogoutSuccessAction | LogoutFailureAction
     | SignupRequestAction | SignupSuccessAction | SignupFailureAction
     | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction
@@ -47,6 +54,18 @@ type UserAction = LoginRequestAction | LoginSuccessAction | LoginFailureAction
     | UnfollowRequestAction | UnfollowSuccessAction | UnfollowFailureAction
     | AddPostToCurrentUserAction | RemovePostFromCurrentUserAction;
 
+interface LoadMyInfoRequestAction {
+    type: typeof LOAD_MY_INFO_REQUEST,
+    data: UserState,
+}
+interface LoadMyInfoSuccessAction {
+    type: typeof LOAD_MY_INFO_SUCCESS,
+    data: UserState,
+}
+interface LoadMyInfoFailureAction {
+    type: typeof LOAD_MY_INFO_FAILURE,
+    error: string,
+}
 interface LoginRequestAction {
     type: typeof LOG_IN_REQUEST,
     data: UserState,
@@ -124,6 +143,9 @@ interface RemovePostFromCurrentUserAction {
 }
 
 const initialState: UserState = {
+    loadMyInfoLoading: false,
+    loadMyInfoDone: false,
+    loadMyInfoError: null,
     loginLoading: false,
     loginDone: false,
     loginError: null,
@@ -164,6 +186,20 @@ export const logoutRequestAction = (): LogoutRequestAction => {
 const reducer = (state = initialState, action: UserAction): UserState => {
     return produce(state, (draft: Draft<UserState>) => {
         switch (action.type) {
+            case LOAD_MY_INFO_REQUEST:
+                draft.loadMyInfoLoading = true;
+                draft.loadMyInfoError = null;
+                draft.loadMyInfoDone = false;
+                break;
+            case LOAD_MY_INFO_SUCCESS:
+                draft.loadMyInfoLoading = false;
+                draft.loadMyInfoDone = true;
+                draft.ownUser = action.data;
+                break;
+            case LOAD_MY_INFO_FAILURE:
+                draft.loadMyInfoLoading = false;
+                draft.loadMyInfoError = action.error;
+                break;
             case LOG_IN_REQUEST:
                 draft.loginLoading = true;
                 draft.loginError = null;

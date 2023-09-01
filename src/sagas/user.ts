@@ -5,7 +5,8 @@ import {
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,
     SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE,
     FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
-    UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE
+    UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
+    LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOAD_MY_INFO_FAILURE,
 } from "../actions";
 import { AnyAction } from "redux";
 
@@ -28,6 +29,43 @@ function isAxiosError(error: any): error is AxiosError {
     return (error as AxiosError).isAxiosError !== undefined;
 }
 
+function loadMyInfoAPI() {
+    return axios.get('/user');
+}
+
+function* loadMyInfo(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(loadMyInfoAPI);
+
+        yield put({
+            type: LOAD_MY_INFO_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            if (err.response) {
+                yield put({
+                    type: LOAD_MY_INFO_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: LOAD_MY_INFO_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: LOAD_MY_INFO_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
 function loginAPI(data: RequestData) {
     return axios.post('/user/login', data);
 }
@@ -35,7 +73,7 @@ function loginAPI(data: RequestData) {
 function* login(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(loginAPI, action.data);
-        yield delay(1000);
+
         yield put({
             type: LOG_IN_SUCCESS,
             data: result.data,
@@ -216,6 +254,9 @@ function* unfollow(action: RequestAction) {
     }
 }
 
+function* watchLoadMyInfo() {
+    yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
+}
 function* watchLogin() {
     yield takeLatest(LOG_IN_REQUEST, login);
 }
@@ -234,6 +275,7 @@ function* watchUnfollow() {
 
 export default function* userSaga() {
     yield all([
+        fork(watchLoadMyInfo),
         fork(watchLogin),
         fork(watchLogout),
         fork(watchSignup),

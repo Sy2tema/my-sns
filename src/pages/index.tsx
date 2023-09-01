@@ -4,19 +4,23 @@ import { RootState } from '../reducers';
 import AppLayout from '../components/AppLayout';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-import { LOAD_POST_REQUEST } from '../actions';
+import { LOAD_POST_REQUEST, LOAD_MY_INFO_REQUEST } from '../actions';
 
 // nextjs는 12, antd는 4버전으로 맞추자
 const Home = () => {
   const dispatch = useDispatch();
   const ownUser = useSelector((state: RootState) => state.user.ownUser);
   const { mainPosts, hasMorePost, loadPostLoading } = useSelector((state: RootState) => state.post);
+  const { } = useSelector((state: RootState) => state.user)
 
   useEffect(() => {
     dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    })
+    dispatch({
       type: LOAD_POST_REQUEST,
     });
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     function onScroll() {
