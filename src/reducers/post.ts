@@ -1,11 +1,10 @@
 import {
     ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
     ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
-    REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS
+    REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE,
+    LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS
 } from "../actions";
-import shortId from "shortid";
 import { produce } from "immer";
-import { faker } from "@faker-js/faker";
 
 interface PostState {
     mainPosts: PostData[];
@@ -115,31 +114,6 @@ const initialState: PostState = {
     loadPostDone: false,
     loadPostError: null,
 };
-
-faker.seed(123);
-
-export const generateDummyPost = (number: number) => Array(number).fill().map(() => ({
-    id: shortId.generate(),
-    User: {
-        id: shortId.generate(),
-        nickname: faker.internet.userName(),
-    },
-    content: faker.lorem.paragraph(),
-    Images: [{
-        id: shortId.generate(),
-        src: faker.image.urlLoremFlickr(),
-    }],
-    Comments: [{
-        id: shortId.generate(),
-        User: {
-            id: shortId.generate(),
-            nickname: faker.internet.userName(),
-        },
-        content: faker.lorem.sentence(),
-    }],
-}));
-
-//initialState.mainPosts = initialState.mainPosts.concat(generateDummyPost(10));
 
 export const addPost = (data: PostState) => ({
     type: ADD_POST_REQUEST,
