@@ -11,7 +11,9 @@ interface SagaStore extends Store {
 }
 
 const loggerMiddleware = ({ dispatch, getState }) => (next) => (action) => {
+    console.log('현재 상태', action);
     if (typeof action === 'function') {
+        console.log('변경된 상태', getState());
         return action(dispatch, getState);
     }
 

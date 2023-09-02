@@ -44,6 +44,7 @@ function* loadMyInfo(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: LOAD_MY_INFO_FAILURE,
                     error: err.response.data,
@@ -81,6 +82,7 @@ function* login(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: LOG_IN_FAILURE,
                     error: err.response.data,
@@ -118,6 +120,7 @@ function* logout() {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: LOG_OUT_FAILURE,
                     error: err.response.data,
@@ -155,6 +158,7 @@ function* signup(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: SIGN_UP_FAILURE,
                     error: err.response.data,
@@ -193,6 +197,7 @@ function* follow(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: FOLLOW_FAILURE,
                     error: err.response.data,
@@ -230,6 +235,7 @@ function* unfollow(action: RequestAction) {
         });
     } catch (err) {
         if (isAxiosError(err)) {
+            console.error("Axios error:", err);
             if (err.response) {
                 yield put({
                     type: UNFOLLOW_FAILURE,

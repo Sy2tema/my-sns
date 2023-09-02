@@ -42,6 +42,7 @@ function* addPost(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: ADD_POST_FAILURE,
                     error: err.response.data,
@@ -84,6 +85,7 @@ function* removePost(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: REMOVE_POST_FAILURE,
                     error: err.response.data,
@@ -122,6 +124,7 @@ function* loadPost(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: LOAD_POST_FAILURE,
                     error: err.response.data,
@@ -160,6 +163,7 @@ function* addComment(action: RequestAction) {
     } catch (err) {
         if (isAxiosError(err)) {
             if (err.response) {
+                console.error("Axios error:", err);
                 yield put({
                     type: ADD_COMMENT_FAILURE,
                     error: err.response.data,

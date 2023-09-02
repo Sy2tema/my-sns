@@ -21,7 +21,7 @@ const FollowButton = ({ post }) => {
                 data: post.User.id,
             })
         }
-    }, [isFollowing]);
+    }, [dispatch, isFollowing, post.User.id]);
 
     return (
         <Button loading={followLoading || unfollowLoading} onClick={onClickButton}>

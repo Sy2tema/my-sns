@@ -35,7 +35,7 @@ const Home = () => {
     return () => {
       window.removeEventListener("scroll", onScroll);
     }
-  }, [hasMorePost, loadPostLoading]);
+  }, [dispatch, hasMorePost, loadPostLoading]);
 
 
   return (
