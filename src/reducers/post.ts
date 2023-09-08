@@ -2,7 +2,9 @@ import {
     ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
     ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
     REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE,
-    LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS
+    LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS,
+    LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
+    DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
 } from "../actions";
 import { produce } from "immer";
 
@@ -22,35 +24,54 @@ interface PostState {
     loadPostLoading: boolean;
     loadPostDone: boolean;
     loadPostError: boolean | string | null;
+    likePostLoading: boolean;
+    likePostDone: boolean;
+    likePostError: boolean | string | null;
+    dislikePostLoading: boolean;
+    dislikePostDone: boolean;
+    dislikePostError: boolean | string | null;
 }
 
 interface PostData {
     id: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    UserId: number;
+    RetweetId: number;
     User: {
-        id: string;
+        id: number;
         nickname: string;
     };
-    content: string;
     Images: {
-        id: string;
+        id: number;
         src: string;
     }[];
     Comments: CommentData[];
+    Likers: [{
+        id: number;
+    }]
 }
 
 interface CommentData {
-    PostId: string;
+    id: number;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    UserID: number;
+    PostId: number;
     User: {
-        id: string;
+        id: number;
         nickname: string;
     }
-    content: string;
 }
 
 type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction
     | AddCommentRequestAction | AddCommentSuccessAction | AddCommentFailureAction
     | LoadPostRequestAction | LoadPostSuccessAction | LoadPostFailureAction
-    | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction;
+    | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction
+    | LikePostRequestAction | LikePostSuccessAction | LikePostFailureAction
+    | DisLikePostRequestAction | DisLikePostSuccessAction | DisLikePostFailureAction;
 
 interface AddPostRequestAction {
     type: typeof ADD_POST_REQUEST,
@@ -96,6 +117,28 @@ interface LoadPostFailureAction {
     type: typeof LOAD_POST_FAILURE,
     error: string,
 }
+interface LikePostRequestAction {
+    type: typeof LIKE_POST_REQUEST,
+}
+interface LikePostSuccessAction {
+    type: typeof LIKE_POST_SUCCESS,
+    data: PostData[],
+}
+interface LikePostFailureAction {
+    type: typeof LIKE_POST_FAILURE,
+    error: string,
+}
+interface DisLikePostRequestAction {
+    type: typeof DISLIKE_POST_REQUEST,
+}
+interface DisLikePostSuccessAction {
+    type: typeof DISLIKE_POST_SUCCESS,
+    data: PostData[],
+}
+interface DisLikePostFailureAction {
+    type: typeof DISLIKE_POST_FAILURE,
+    error: string,
+}
 
 const initialState: PostState = {
     mainPosts: [],
@@ -113,6 +156,12 @@ const initialState: PostState = {
     loadPostLoading: false,
     loadPostDone: false,
     loadPostError: null,
+    likePostLoading: false,
+    likePostDone: false,
+    likePostError: null,
+    dislikePostLoading: false,
+    dislikePostDone: false,
+    dislikePostError: null,
 };
 
 export const addPost = (data: PostState) => ({
@@ -186,6 +235,43 @@ const reducer = (state = initialState, action: PostAction): PostState => {
             case LOAD_POST_FAILURE:
                 draft.loadPostLoading = false;
                 draft.loadPostError = action.error;
+                break;
+            case LIKE_POST_REQUEST:
+                draft.loadPostLoading = true;
+                draft.loadPostDone = false;
+                draft.loadPostError = null;
+                break;
+            case LIKE_POST_SUCCESS: {
+                const post = draft.mainPosts.find((value) => value.id === action.data.PostId);
+                post?.Likers.push({ id: action.data.UserId });
+                draft.likePostLoading = false;
+                draft.likePostDone = true;
+                draft.hasMorePost = draft.mainPosts.length < 50;
+                break;
+            }
+            case LIKE_POST_FAILURE:
+                draft.likePostLoading = false;
+                draft.likePostError = action.error;
+                break;
+            case DISLIKE_POST_REQUEST:
+                draft.dislikePostLoading = true;
+                draft.dislikePostDone = false;
+                draft.dislikePostError = null;
+                break;
+            case DISLIKE_POST_SUCCESS: {
+                const postIndex = draft.mainPosts.findIndex((value) => value.id === action.data.PostId);
+                if (postIndex > -1) { // 데이터 일관성을 위해 post의 인덱스를 찾은 후 해당 인덱스가 유효한 경우에만 Likers 배열을 수정하도록 조치합니다
+                    const post = draft.mainPosts[postIndex];
+                    post.Likers = post.Likers.filter((value) => value.id !== action.data.UserId);
+                    draft.dislikePostLoading = false;
+                    draft.dislikePostDone = true;
+                    draft.hasMorePost = draft.mainPosts.length < 50;
+                }
+                break;
+            }
+            case DISLIKE_POST_FAILURE:
+                draft.dislikePostLoading = false;
+                draft.dislikePostError = action.error;
                 break;
             default:
                 break;
