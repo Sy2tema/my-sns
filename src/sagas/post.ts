@@ -71,7 +71,7 @@ function* addPost(action: RequestAction) {
 }
 
 function removePostAPI(data: RequestData) {
-    return axios.delete('/post');
+    return axios.delete(`/post/${data}`);
 }
 
 function* removePost(action: RequestAction) {
