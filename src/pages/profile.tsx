@@ -11,12 +11,12 @@ const Profile = () => {
     const { ownUser } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
-        if (ownUser && ownUser.id) {
+        if (!ownUser) {
             Router.replace("/");
         }
-    }, [ownUser && ownUser.id]); // ownUser?.id로 한번에 써도 된다.
+    }, [ownUser]);
 
-    if (!ownUser) return null;
+    if (ownUser) return null;
 
     return (
         <>
