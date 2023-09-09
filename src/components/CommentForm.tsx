@@ -5,8 +5,9 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import { ADD_COMMENT_REQUEST } from "../actions";
+import { PostData } from "../reducers/post";
 
-const CommentForm = ({ post }) => {
+const CommentForm = ({ post }: { post: PostData }) => {
     const dispatch = useDispatch();
     const id = useSelector((state: RootState) => state.user.ownUser?.id);
     const { addCommentDone, addCommentLoading } = useSelector((state: RootState) => state.post);

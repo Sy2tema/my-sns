@@ -10,14 +10,6 @@ import {
 } from "../actions";
 import { produce, Draft } from "immer";
 
-interface User {
-    nickname: string;
-    id: string;
-    Posts: Array<{ id: string }>;
-    Followings: Array<{ id: string }>;
-    Followers: Array<{ id: string }>;
-}
-
 interface UserState {
     loadMyInfoLoading: boolean;
     loadMyInfoDone: boolean;
@@ -40,9 +32,28 @@ interface UserState {
     unfollowLoading: boolean;
     unfollowDone: boolean;
     unfollowError: boolean | string | null;
-    ownUser: User | null;
+    ownUser: UserData | null;
     signUpData: {};
     loginData: {};
+}
+
+interface UserData {
+    nickname: string;
+    id: string;
+    Posts: {
+        id: string;
+    }[];
+    Followings: {
+        id: string;
+    }[];
+    Followers: {
+        id: string;
+    }[];
+}
+
+interface LoginData {
+    id: string;
+    password: string;
 }
 
 type UserAction = LoadMyInfoRequestAction | LoadMyInfoSuccessAction | LoadMyInfoFailureAction
@@ -60,7 +71,7 @@ interface LoadMyInfoRequestAction {
 }
 interface LoadMyInfoSuccessAction {
     type: typeof LOAD_MY_INFO_SUCCESS,
-    data: UserState,
+    data: UserData,
 }
 interface LoadMyInfoFailureAction {
     type: typeof LOAD_MY_INFO_FAILURE,
@@ -68,11 +79,11 @@ interface LoadMyInfoFailureAction {
 }
 interface LoginRequestAction {
     type: typeof LOG_IN_REQUEST,
-    data: UserState,
+    data: LoginData,
 }
 interface LoginSuccessAction {
     type: typeof LOG_IN_SUCCESS,
-    data: UserState,
+    data: UserData,
 }
 interface LoginFailureAction {
     type: typeof LOG_IN_FAILURE,
@@ -104,7 +115,7 @@ interface ChangeNicknameRequestAction {
 }
 interface ChangeNicknameSuccessAction {
     type: typeof CHANGE_NICKNAME_SUCCESS,
-    data: UserState,
+    data: UserData,
 }
 interface ChangeNicknameFailureAction {
     type: typeof CHANGE_NICKNAME_FAILURE,
@@ -116,7 +127,7 @@ interface FollowRequestAction {
 }
 interface FollowSuccessAction {
     type: typeof FOLLOW_SUCCESS,
-    data: UserState,
+    data: UserData,
 }
 interface FollowFailureAction {
     type: typeof FOLLOW_FAILURE,
@@ -170,7 +181,7 @@ const initialState: UserState = {
 };
 
 // action creator
-export const loginRequestAction = (data: UserState): LoginRequestAction => {
+export const loginRequestAction = (data: LoginData): LoginRequestAction => {
     return {
         type: LOG_IN_REQUEST,
         data,
@@ -250,7 +261,9 @@ const reducer = (state = initialState, action: UserAction): UserState => {
             case CHANGE_NICKNAME_SUCCESS:
                 draft.changeNicknameDone = true;
                 draft.changeNicknameLoading = false;
-                draft.ownUser = null;
+                if (draft.ownUser) {
+                    draft.ownUser.nickname = action.data.nickname;
+                }
                 break;
             case CHANGE_NICKNAME_FAILURE:
                 draft.changeNicknameLoading = false;

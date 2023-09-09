@@ -9,6 +9,7 @@ import {
 import { produce } from "immer";
 
 interface PostState {
+    id: number,
     mainPosts: PostData[];
     imagePaths: string[];
     hasMorePost: boolean;
@@ -32,7 +33,7 @@ interface PostState {
     dislikePostError: boolean | string | null;
 }
 
-interface PostData {
+export interface PostData {
     id: string;
     content: string;
     createdAt: string;
@@ -50,7 +51,9 @@ interface PostData {
     Comments: CommentData[];
     Likers: [{
         id: number;
-    }]
+    }],
+    PostId?: number,
+    UserID?: number,
 }
 
 interface CommentData {
@@ -58,7 +61,7 @@ interface CommentData {
     content: string;
     createdAt: string;
     updatedAt: string;
-    UserID: number;
+    UserId: number;
     PostId: number;
     User: {
         id: number;
@@ -78,7 +81,7 @@ interface AddPostRequestAction {
 }
 interface AddPostSuccessAction {
     type: typeof ADD_POST_SUCCESS,
-    data: PostState,
+    data: PostData,
 }
 interface AddPostFailureAction {
     type: typeof ADD_POST_FAILURE,
@@ -122,7 +125,10 @@ interface LikePostRequestAction {
 }
 interface LikePostSuccessAction {
     type: typeof LIKE_POST_SUCCESS,
-    data: PostData[],
+    data: {
+        PostId: number,
+        UserId: number,
+    },
 }
 interface LikePostFailureAction {
     type: typeof LIKE_POST_FAILURE,
@@ -141,6 +147,7 @@ interface DisLikePostFailureAction {
 }
 
 const initialState: PostState = {
+    id: -1,
     mainPosts: [],
     imagePaths: [],
     hasMorePost: true,
@@ -197,7 +204,7 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.addCommentError = null;
                 break;
             case ADD_COMMENT_SUCCESS:
-                const post = draft.mainPosts.find((value) => value.id === action.data.PostId);
+                const post = draft.mainPosts.find((value) => Number(value.id) === action.data.PostId);
                 post?.Comments.unshift(action.data);
                 draft.addCommentLoading = false;
                 draft.addCommentDone = true;
@@ -230,7 +237,7 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.mainPosts = draft.mainPosts.concat(action.data);
                 draft.loadPostLoading = false;
                 draft.loadPostDone = true;
-                draft.hasMorePost = draft.mainPosts.length < 50;
+                draft.hasMorePost = draft.mainPosts.length < action.data.length;
                 break;
             case LOAD_POST_FAILURE:
                 draft.loadPostLoading = false;
@@ -242,11 +249,10 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.loadPostError = null;
                 break;
             case LIKE_POST_SUCCESS: {
-                const post = draft.mainPosts.find((value) => value.id === action.data.PostId);
+                const post = draft.mainPosts.find((value) => Number(value.id) === action.data.PostId);
                 post?.Likers.push({ id: action.data.UserId });
                 draft.likePostLoading = false;
                 draft.likePostDone = true;
-                draft.hasMorePost = draft.mainPosts.length < 50;
                 break;
             }
             case LIKE_POST_FAILURE:
@@ -265,7 +271,6 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                     post.Likers = post.Likers.filter((value) => value.id !== action.data.UserId);
                     draft.dislikePostLoading = false;
                     draft.dislikePostDone = true;
-                    draft.hasMorePost = draft.mainPosts.length < 50;
                 }
                 break;
             }

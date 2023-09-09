@@ -11,16 +11,17 @@ const Home = () => {
   const dispatch = useDispatch();
   const ownUser = useSelector((state: RootState) => state.user.ownUser);
   const { mainPosts, hasMorePost, loadPostLoading } = useSelector((state: RootState) => state.post);
-  const { } = useSelector((state: RootState) => state.user)
 
   useEffect(() => {
     dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    })
-    dispatch({
-      type: LOAD_POST_REQUEST,
     });
-  }, [dispatch]);
+    if (mainPosts.length === 0) { // 최초 게시글 로딩 후 중복 로딩을 방지하도록 조건식을 추가했습니다.
+      dispatch({
+        type: LOAD_POST_REQUEST,
+      });
+    }
+  }, [dispatch, mainPosts.length]);
 
   useEffect(() => {
     function onScroll() {
