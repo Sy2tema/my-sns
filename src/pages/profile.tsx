@@ -16,7 +16,7 @@ const Profile = () => {
         }
     }, [ownUser]);
 
-    if (ownUser) return null;
+    if (!ownUser) return null;
 
     return (
         <>

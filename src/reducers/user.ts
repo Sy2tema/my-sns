@@ -127,7 +127,7 @@ interface FollowRequestAction {
 }
 interface FollowSuccessAction {
     type: typeof FOLLOW_SUCCESS,
-    data: UserData,
+    data: string,
 }
 interface FollowFailureAction {
     type: typeof FOLLOW_FAILURE,
@@ -275,6 +275,8 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.followDone = false;
                 break;
             case FOLLOW_SUCCESS:
+                console.log('원본', draft);
+                console.log('바꿀거: ', action.data);
                 draft.followDone = true;
                 draft.followLoading = false;
                 draft.ownUser?.Followings.push({ id: action.data });
@@ -292,7 +294,7 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.unfollowDone = true;
                 draft.unfollowLoading = false;
                 if (draft.ownUser) {
-                    draft.ownUser.Followings = draft.ownUser.Followings.filter((value) => value.id !== action.data);
+                    draft.ownUser.Followings = draft.ownUser.Followings.filter((value) => Number(value.id) !== action.data);
                 }
                 break;
             case UNFOLLOW_FAILURE:

@@ -7,6 +7,7 @@ import {
     FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
     UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
     LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOAD_MY_INFO_FAILURE,
+    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
 } from "../actions";
 import { AnyAction } from "redux";
 
@@ -14,6 +15,7 @@ interface RequestData {
     email: string;
     username: string;
     password: string;
+    nickname?: string;
 }
 
 interface RequestAction extends AnyAction {
@@ -67,6 +69,7 @@ function* loadMyInfo(action: RequestAction) {
         }
     }
 }
+
 function loginAPI(data: RequestData) {
     return axios.post('/user/login', data);
 }
@@ -260,6 +263,45 @@ function* unfollow(action: RequestAction) {
     }
 }
 
+function changeNicknameAPI(data: RequestData) {
+    return axios.patch('/user/nickname', { nickname: data });
+}
+
+function* changeNickname(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(changeNicknameAPI, action.data);
+
+        yield put({
+            type: CHANGE_NICKNAME_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            console.error("Axios error:", err);
+            if (err.response) {
+                yield put({
+                    type: CHANGE_NICKNAME_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: CHANGE_NICKNAME_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: CHANGE_NICKNAME_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
+
 function* watchLoadMyInfo() {
     yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
@@ -278,6 +320,9 @@ function* watchFollow() {
 function* watchUnfollow() {
     yield takeLatest(UNFOLLOW_REQUEST, unfollow);
 }
+function* watchChangeNickname() {
+    yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname);
+}
 
 export default function* userSaga() {
     yield all([
@@ -287,5 +332,6 @@ export default function* userSaga() {
         fork(watchSignup),
         fork(watchFollow),
         fork(watchUnfollow),
+        fork(watchChangeNickname),
     ])
 }
