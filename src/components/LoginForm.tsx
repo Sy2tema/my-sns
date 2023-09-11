@@ -4,7 +4,7 @@ import { useCallback, useEffect } from "react";
 import styled from 'styled-components';
 import useInput from "../hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
-import { LoginRequestAction, loginRequestAction } from "../reducers/user";
+import { loginRequestAction } from "../reducers/user";
 import { RootState } from "../reducers";
 
 const ButtonWrapper = styled.div`
@@ -18,7 +18,7 @@ const FormWrapper = styled(Form)`
 const LoginForm = () => {
     const dispatch = useDispatch();
     const { loginLoading, loginError } = useSelector((state: RootState) => state.user);
-    const [id, onChangeId] = useInput("");
+    const [email, onChangeEmail] = useInput("");
     const [password, onChangePassword] = useInput("");
 
     useEffect(() => {
@@ -30,15 +30,15 @@ const LoginForm = () => {
     // ButtonWrapper와 같은 기능을 한다.
     // const style = useMemo(() => ({ marginTop: 10 }), []);
     const onSubmitForm = useCallback(() => {
-        dispatch(loginRequestAction({ id, password }));
-    }, [dispatch, id, password]);
+        dispatch(loginRequestAction({ email, password }));
+    }, [dispatch, email, password]);
 
     return (
         <FormWrapper onFinish={onSubmitForm}>
             <div>
                 <label htmlFor="user-email">이메일</label>
                 <br />
-                <Input name="user-email" type="email" value={id} onChange={onChangeId} required />
+                <Input name="user-email" type="email" value={email} onChange={onChangeEmail} required />
             </div>
             <div>
                 <label htmlFor="user-password">비밀번호</label>

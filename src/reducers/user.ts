@@ -52,7 +52,7 @@ interface UserData {
 }
 
 interface LoginData {
-    id: string;
+    email: string;
     password: string;
 }
 
