@@ -7,7 +7,7 @@ import {
     FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
     UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
     LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOAD_MY_INFO_FAILURE,
-    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
+    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_SUCCESS,
 } from "../actions";
 import { AnyAction } from "redux";
 
@@ -186,7 +186,7 @@ function* signup(action: RequestAction) {
 }
 
 function followAPI(data: RequestData) {
-    return axios.post('/user/follow');
+    return axios.patch(`/user/${data}/follow`);
 }
 
 function* follow(action: RequestAction) {
@@ -225,7 +225,7 @@ function* follow(action: RequestAction) {
 }
 
 function unfollowAPI(data: RequestData) {
-    return axios.post('/user/unfollow');
+    return axios.delete(`/user/${data}/follow`);
 }
 
 function* unfollow(action: RequestAction) {
@@ -257,6 +257,84 @@ function* unfollow(action: RequestAction) {
             console.error("An unknown error occurred:", err);
             yield put({
                 type: UNFOLLOW_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
+
+function loadFollowersAPI() {
+    return axios.get(`/user/followers`);
+}
+
+function* loadFollowers(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(loadFollowersAPI);
+
+        yield put({
+            type: LOAD_FOLLOWERS_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            console.error("Axios error:", err);
+            if (err.response) {
+                yield put({
+                    type: LOAD_FOLLOWERS_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: LOAD_FOLLOWERS_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: LOAD_FOLLOWERS_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
+
+function loadFollowingsAPI() {
+    return axios.get(`/user/followings`);
+}
+
+function* loadFollowings(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(loadFollowingsAPI);
+
+        yield put({
+            type: LOAD_FOLLOWINGS_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            console.error("Axios error:", err);
+            if (err.response) {
+                yield put({
+                    type: LOAD_FOLLOWINGS_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: LOAD_FOLLOWINGS_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: LOAD_FOLLOWINGS_FAILURE,
                 error: "An unknown error occurred."
             });
         }
@@ -320,6 +398,12 @@ function* watchFollow() {
 function* watchUnfollow() {
     yield takeLatest(UNFOLLOW_REQUEST, unfollow);
 }
+function* watchLoadFollowers() {
+    yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers);
+}
+function* watchLoadFollowings() {
+    yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
+}
 function* watchChangeNickname() {
     yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname);
 }
@@ -332,6 +416,8 @@ export default function* userSaga() {
         fork(watchSignup),
         fork(watchFollow),
         fork(watchUnfollow),
+        fork(watchLoadFollowers),
+        fork(watchLoadFollowings),
         fork(watchChangeNickname),
     ])
 }

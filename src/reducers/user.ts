@@ -7,6 +7,8 @@ import {
     ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER,
     FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
     UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
+    LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE,
+    LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_FOLLOWINGS_FAILURE,
 } from "../actions";
 import { produce, Draft } from "immer";
 
@@ -32,6 +34,12 @@ interface UserState {
     unfollowLoading: boolean;
     unfollowDone: boolean;
     unfollowError: boolean | string | null;
+    loadFollowersLoading: boolean;
+    loadFollowersDone: boolean;
+    loadFollowersError: boolean | string | null;
+    loadFollowingsLoading: boolean;
+    loadFollowingsDone: boolean;
+    loadFollowingsError: boolean | string | null;
     ownUser: UserData | null;
     signUpData: {};
     loginData: {};
@@ -39,15 +47,15 @@ interface UserState {
 
 interface UserData {
     nickname: string;
-    id: string;
+    id: number;
     Posts: {
-        id: string;
+        id: number;
     }[];
     Followings: {
-        id: string;
+        id: number;
     }[];
     Followers: {
-        id: string;
+        id: number;
     }[];
 }
 
@@ -63,6 +71,8 @@ type UserAction = LoadMyInfoRequestAction | LoadMyInfoSuccessAction | LoadMyInfo
     | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction
     | FollowRequestAction | FollowSuccessAction | FollowFailureAction
     | UnfollowRequestAction | UnfollowSuccessAction | UnfollowFailureAction
+    | LoadFollowersRequestAction | LoadFollowersSuccessAction | LoadFollowersFailureAction
+    | LoadFollowingsRequestAction | LoadFollowingsSuccessAction | LoadFollowingsFailureAction
     | AddPostToCurrentUserAction | RemovePostFromCurrentUserAction;
 
 interface LoadMyInfoRequestAction {
@@ -127,7 +137,7 @@ interface FollowRequestAction {
 }
 interface FollowSuccessAction {
     type: typeof FOLLOW_SUCCESS,
-    data: string,
+    data: UserState,
 }
 interface FollowFailureAction {
     type: typeof FOLLOW_FAILURE,
@@ -143,6 +153,30 @@ interface UnfollowSuccessAction {
 }
 interface UnfollowFailureAction {
     type: typeof UNFOLLOW_FAILURE,
+    error: string,
+}
+interface LoadFollowersRequestAction {
+    type: typeof LOAD_FOLLOWERS_REQUEST,
+    data: UserState,
+}
+interface LoadFollowersSuccessAction {
+    type: typeof LOAD_FOLLOWERS_SUCCESS,
+    data: UserState,
+}
+interface LoadFollowersFailureAction {
+    type: typeof LOAD_FOLLOWERS_FAILURE,
+    error: string,
+}
+interface LoadFollowingsRequestAction {
+    type: typeof LOAD_FOLLOWINGS_REQUEST,
+    data: UserState,
+}
+interface LoadFollowingsSuccessAction {
+    type: typeof LOAD_FOLLOWINGS_SUCCESS,
+    data: UserState,
+}
+interface LoadFollowingsFailureAction {
+    type: typeof LOAD_FOLLOWINGS_FAILURE,
     error: string,
 }
 interface AddPostToCurrentUserAction {
@@ -175,6 +209,12 @@ const initialState: UserState = {
     unfollowLoading: false,
     unfollowDone: false,
     unfollowError: null,
+    loadFollowersLoading: false,
+    loadFollowersDone: false,
+    loadFollowersError: null,
+    loadFollowingsLoading: false,
+    loadFollowingsDone: false,
+    loadFollowingsError: null,
     ownUser: null,
     signUpData: {},
     loginData: {},
@@ -275,11 +315,9 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.followDone = false;
                 break;
             case FOLLOW_SUCCESS:
-                console.log('원본', draft);
-                console.log('바꿀거: ', action.data);
                 draft.followDone = true;
                 draft.followLoading = false;
-                draft.ownUser?.Followings.push({ id: action.data });
+                draft.ownUser?.Followings.push({ id: action.data.UserId });
                 break;
             case FOLLOW_FAILURE:
                 draft.followLoading = false;
@@ -294,12 +332,42 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.unfollowDone = true;
                 draft.unfollowLoading = false;
                 if (draft.ownUser) {
-                    draft.ownUser.Followings = draft.ownUser.Followings.filter((value) => Number(value.id) !== action.data);
+                    draft.ownUser.Followings = draft.ownUser.Followings.filter((value) => Number(value.id) !== action.data.UserId);
                 }
                 break;
             case UNFOLLOW_FAILURE:
                 draft.unfollowLoading = false;
                 draft.unfollowError = action.error;
+                break;
+            case LOAD_FOLLOWERS_REQUEST:
+                draft.loadFollowersLoading = true;
+                draft.loadFollowersError = null;
+                draft.loadFollowersDone = false;
+                break;
+            case LOAD_FOLLOWERS_SUCCESS:
+                draft.loadFollowersDone = true;
+                draft.loadFollowersLoading = false;
+                if (draft.ownUser)
+                    draft.ownUser.Followers = action.data;
+                break;
+            case LOAD_FOLLOWERS_FAILURE:
+                draft.loadFollowersLoading = false;
+                draft.loadFollowersError = action.error;
+                break;
+            case LOAD_FOLLOWINGS_REQUEST:
+                draft.loadFollowingsLoading = true;
+                draft.loadFollowingsError = null;
+                draft.loadFollowingsDone = false;
+                break;
+            case LOAD_FOLLOWINGS_SUCCESS:
+                draft.loadFollowingsDone = true;
+                draft.loadFollowingsLoading = false;
+                if (draft.ownUser)
+                    draft.ownUser.Followings = action.data;
+                break;
+            case LOAD_FOLLOWINGS_FAILURE:
+                draft.loadFollowingsLoading = false;
+                draft.loadFollowingsError = action.error;
                 break;
             case ADD_POST_TO_CURRENT_USER:
                 if (draft.ownUser)
