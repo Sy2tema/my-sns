@@ -14,10 +14,10 @@ const Profile = () => {
 
     useEffect(() => {
         dispatch({
-            type: LOAD_FOLLOWERS_REQUEST
+            type: LOAD_FOLLOWERS_REQUEST,
         });
         dispatch({
-            type: LOAD_FOLLOWINGS_REQUEST
+            type: LOAD_FOLLOWINGS_REQUEST,
         })
     }, [dispatch]);
 

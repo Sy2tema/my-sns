@@ -7,7 +7,10 @@ import {
     FOLLOW_REQUEST, FOLLOW_SUCCESS, FOLLOW_FAILURE,
     UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
     LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOAD_MY_INFO_FAILURE,
-    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_SUCCESS,
+    CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, CHANGE_NICKNAME_FAILURE,
+    LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE,
+    LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_FOLLOWINGS_FAILURE,
+    REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, REMOVE_FOLLOWER_FAILURE,
 } from "../actions";
 import { AnyAction } from "redux";
 
@@ -263,13 +266,52 @@ function* unfollow(action: RequestAction) {
     }
 }
 
-function loadFollowersAPI() {
-    return axios.get(`/user/followers`);
+function removeFollowerAPI(data: RequestData) {
+    return axios.delete(`/user/follower/${data}`);
+}
+
+function* removeFollower(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(removeFollowerAPI, action.data);
+
+        yield put({
+            type: REMOVE_FOLLOWER_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            console.error("Axios error:", err);
+            if (err.response) {
+                yield put({
+                    type: REMOVE_FOLLOWER_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: REMOVE_FOLLOWER_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: UNFOLLOW_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
+
+function loadFollowersAPI(data: RequestData) {
+    return axios.get(`/user/followers/`);
 }
 
 function* loadFollowers(action: RequestAction) {
     try {
-        const result: ApiResponse = yield call(loadFollowersAPI);
+        const result: ApiResponse = yield call(loadFollowersAPI, action.data);
 
         yield put({
             type: LOAD_FOLLOWERS_SUCCESS,
@@ -302,13 +344,13 @@ function* loadFollowers(action: RequestAction) {
     }
 }
 
-function loadFollowingsAPI() {
-    return axios.get(`/user/followings`);
+function loadFollowingsAPI(data: RequestData) {
+    return axios.get(`/user/followings/`);
 }
 
 function* loadFollowings(action: RequestAction) {
     try {
-        const result: ApiResponse = yield call(loadFollowingsAPI);
+        const result: ApiResponse = yield call(loadFollowingsAPI, action.data);
 
         yield put({
             type: LOAD_FOLLOWINGS_SUCCESS,
@@ -398,6 +440,9 @@ function* watchFollow() {
 function* watchUnfollow() {
     yield takeLatest(UNFOLLOW_REQUEST, unfollow);
 }
+function* watchRemoveFollower() {
+    yield takeLatest(REMOVE_FOLLOWER_REQUEST, removeFollower);
+}
 function* watchLoadFollowers() {
     yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers);
 }
@@ -416,6 +461,7 @@ export default function* userSaga() {
         fork(watchSignup),
         fork(watchFollow),
         fork(watchUnfollow),
+        fork(watchRemoveFollower),
         fork(watchLoadFollowers),
         fork(watchLoadFollowings),
         fork(watchChangeNickname),

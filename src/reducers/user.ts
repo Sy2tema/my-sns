@@ -9,6 +9,7 @@ import {
     UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
     LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE,
     LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_FOLLOWINGS_FAILURE,
+    REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, REMOVE_FOLLOWER_FAILURE,
 } from "../actions";
 import { produce, Draft } from "immer";
 
@@ -34,6 +35,9 @@ interface UserState {
     unfollowLoading: boolean;
     unfollowDone: boolean;
     unfollowError: boolean | string | null;
+    removeFollowerLoading: boolean;
+    removeFollowerDone: boolean;
+    removeFollowerError: boolean | string | null;
     loadFollowersLoading: boolean;
     loadFollowersDone: boolean;
     loadFollowersError: boolean | string | null;
@@ -71,6 +75,7 @@ type UserAction = LoadMyInfoRequestAction | LoadMyInfoSuccessAction | LoadMyInfo
     | ChangeNicknameRequestAction | ChangeNicknameSuccessAction | ChangeNicknameFailureAction
     | FollowRequestAction | FollowSuccessAction | FollowFailureAction
     | UnfollowRequestAction | UnfollowSuccessAction | UnfollowFailureAction
+    | RemoveFollowerRequestAction | RemoveFollowerSuccessAction | RemoveFollowerFailureAction
     | LoadFollowersRequestAction | LoadFollowersSuccessAction | LoadFollowersFailureAction
     | LoadFollowingsRequestAction | LoadFollowingsSuccessAction | LoadFollowingsFailureAction
     | AddPostToCurrentUserAction | RemovePostFromCurrentUserAction;
@@ -155,6 +160,18 @@ interface UnfollowFailureAction {
     type: typeof UNFOLLOW_FAILURE,
     error: string,
 }
+interface RemoveFollowerRequestAction {
+    type: typeof REMOVE_FOLLOWER_REQUEST,
+    data: UserState,
+}
+interface RemoveFollowerSuccessAction {
+    type: typeof REMOVE_FOLLOWER_SUCCESS,
+    data: UserState,
+}
+interface RemoveFollowerFailureAction {
+    type: typeof REMOVE_FOLLOWER_FAILURE,
+    error: string,
+}
 interface LoadFollowersRequestAction {
     type: typeof LOAD_FOLLOWERS_REQUEST,
     data: UserState,
@@ -209,6 +226,9 @@ const initialState: UserState = {
     unfollowLoading: false,
     unfollowDone: false,
     unfollowError: null,
+    removeFollowerLoading: false,
+    removeFollowerDone: false,
+    removeFollowerError: null,
     loadFollowersLoading: false,
     loadFollowersDone: false,
     loadFollowersError: null,
@@ -336,6 +356,22 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 }
                 break;
             case UNFOLLOW_FAILURE:
+                draft.removeFollowerLoading = false;
+                draft.removeFollowerError = action.error;
+                break;
+            case REMOVE_FOLLOWER_REQUEST:
+                draft.removeFollowerLoading = true;
+                draft.removeFollowerError = null;
+                draft.removeFollowerDone = false;
+                break;
+            case REMOVE_FOLLOWER_SUCCESS:
+                draft.removeFollowerDone = true;
+                draft.removeFollowerLoading = false;
+                if (draft.ownUser) {
+                    draft.ownUser.Followers = draft.ownUser.Followers.filter((value) => Number(value.id) !== action.data.UserId);
+                }
+                break;
+            case REMOVE_FOLLOWER_FAILURE:
                 draft.unfollowLoading = false;
                 draft.unfollowError = action.error;
                 break;
