@@ -12,6 +12,7 @@ import {
     REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, REMOVE_FOLLOWER_FAILURE,
 } from "../actions";
 import { produce, Draft } from "immer";
+import { PostData } from "./post";
 
 interface UserState {
     loadMyInfoLoading: boolean;
@@ -49,18 +50,17 @@ interface UserState {
     loginData: {};
 }
 
-interface UserData {
+export interface UserData {
     nickname: string;
     id: number;
-    Posts: {
-        id: number;
-    }[];
-    Followings: {
-        id: number;
-    }[];
-    Followers: {
-        id: number;
-    }[];
+    Posts: (IdData | PostData)[];
+    Followings: (IdData | UserData)[];
+    Followers: (IdData | UserData)[];
+}
+
+export interface IdData {
+    id: number;
+    nickname?: string;
 }
 
 interface LoginData {
@@ -142,7 +142,7 @@ interface FollowRequestAction {
 }
 interface FollowSuccessAction {
     type: typeof FOLLOW_SUCCESS,
-    data: UserState,
+    data: { UserId: number },
 }
 interface FollowFailureAction {
     type: typeof FOLLOW_FAILURE,
@@ -154,7 +154,7 @@ interface UnfollowRequestAction {
 }
 interface UnfollowSuccessAction {
     type: typeof UNFOLLOW_SUCCESS,
-    data: UserState,
+    data: { UserId: number },
 }
 interface UnfollowFailureAction {
     type: typeof UNFOLLOW_FAILURE,
@@ -166,7 +166,7 @@ interface RemoveFollowerRequestAction {
 }
 interface RemoveFollowerSuccessAction {
     type: typeof REMOVE_FOLLOWER_SUCCESS,
-    data: UserState,
+    data: { UserId: number },
 }
 interface RemoveFollowerFailureAction {
     type: typeof REMOVE_FOLLOWER_FAILURE,
@@ -198,10 +198,11 @@ interface LoadFollowingsFailureAction {
 }
 interface AddPostToCurrentUserAction {
     type: typeof ADD_POST_TO_CURRENT_USER,
-    data: string,
+    data: number,
 }
 interface RemovePostFromCurrentUserAction {
     type: typeof REMOVE_POST_FROM_CURRENT_USER,
+    data: number,
 }
 
 const initialState: UserState = {
@@ -337,7 +338,7 @@ const reducer = (state = initialState, action: UserAction): UserState => {
             case FOLLOW_SUCCESS:
                 draft.followDone = true;
                 draft.followLoading = false;
-                draft.ownUser?.Followings.push({ id: action.data.UserId });
+                draft.ownUser?.Followings.push({ id: action.data.UserId } as IdData);
                 break;
             case FOLLOW_FAILURE:
                 draft.followLoading = false;
@@ -352,7 +353,7 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.unfollowDone = true;
                 draft.unfollowLoading = false;
                 if (draft.ownUser) {
-                    draft.ownUser.Followings = draft.ownUser.Followings.filter((value) => Number(value.id) !== action.data.UserId);
+                    draft.ownUser.Followings = draft.ownUser.Followings?.filter((value) => Number(value.id) !== action.data.UserId);
                 }
                 break;
             case UNFOLLOW_FAILURE:
@@ -368,7 +369,8 @@ const reducer = (state = initialState, action: UserAction): UserState => {
                 draft.removeFollowerDone = true;
                 draft.removeFollowerLoading = false;
                 if (draft.ownUser) {
-                    draft.ownUser.Followers = draft.ownUser.Followers.filter((value) => Number(value.id) !== action.data.UserId);
+                    console.log(action);
+                    draft.ownUser.Followers = draft.ownUser.Followers?.filter((value) => Number(value.id) !== action.data.UserId);
                 }
                 break;
             case REMOVE_FOLLOWER_FAILURE:
@@ -383,8 +385,9 @@ const reducer = (state = initialState, action: UserAction): UserState => {
             case LOAD_FOLLOWERS_SUCCESS:
                 draft.loadFollowersDone = true;
                 draft.loadFollowersLoading = false;
-                if (draft.ownUser)
-                    draft.ownUser.Followers = action.data;
+                if (draft.ownUser) {
+                    draft.ownUser.Followers = action.data as unknown as (UserData | IdData)[];
+                }
                 break;
             case LOAD_FOLLOWERS_FAILURE:
                 draft.loadFollowersLoading = false;
@@ -398,20 +401,23 @@ const reducer = (state = initialState, action: UserAction): UserState => {
             case LOAD_FOLLOWINGS_SUCCESS:
                 draft.loadFollowingsDone = true;
                 draft.loadFollowingsLoading = false;
-                if (draft.ownUser)
-                    draft.ownUser.Followings = action.data;
+                if (draft.ownUser) {
+                    draft.ownUser.Followings = action.data as unknown as (UserData | IdData)[];
+                }
                 break;
             case LOAD_FOLLOWINGS_FAILURE:
                 draft.loadFollowingsLoading = false;
                 draft.loadFollowingsError = action.error;
                 break;
             case ADD_POST_TO_CURRENT_USER:
-                if (draft.ownUser)
-                    draft.ownUser.Posts.unshift({ id: action.data });
+                if (draft.ownUser) {
+                    draft.ownUser.Posts?.unshift({ id: action.data });
+                }
                 break;
             case REMOVE_POST_FROM_CURRENT_USER:
-                if (draft.ownUser)
-                    draft.ownUser.Posts = draft.ownUser.Posts.filter((value) => value.id !== action.data);
+                if (draft.ownUser) {
+                    draft.ownUser.Posts = draft.ownUser.Posts?.filter((value) => (value.id) !== action.data);
+                }
                 break;
             default:
                 break;

@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import { StopOutlined } from '@ant-design/icons';
 import { useDispatch } from "react-redux";
 import { REMOVE_FOLLOWER_REQUEST, UNFOLLOW_REQUEST } from "../actions";
+import { IdData, UserData } from "../reducers/user";
+import { ReactNode } from "react";
 
-const FollowList = ({ header, data }) => {
+const FollowList = ({ header, data }: { header: ReactNode, data: (UserData | IdData)[] }) => {
     const dispatch = useDispatch();
     // 반복문 안에 onClick이 있기 때문에 고차함수로 선언해준다
-    const onDelete = (id) => () => {
+    const onDelete = (id: number) => () => {
         if (header === '팔로잉 목록') {
             dispatch({
                 type: UNFOLLOW_REQUEST,
@@ -30,7 +32,7 @@ const FollowList = ({ header, data }) => {
             loadMore={<div style={{ textAlign: 'center', margin: '10px 0' }}><button>더보기</button></div>}
             bordered
             dataSource={data}
-            renderItem={(item) => (
+            renderItem={(item: UserData | IdData) => (
                 <List.Item style={{ marginTop: 20 }}>
                     <Card actions={[<StopOutlined key="stop" onClick={onDelete(item.id)} />]}>
                         <Card.Meta description={item.nickname} />

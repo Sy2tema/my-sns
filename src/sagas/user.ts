@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import {
     LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE,
     LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE,

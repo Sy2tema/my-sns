@@ -34,7 +34,7 @@ interface PostState {
 }
 
 export interface PostData {
-    id: string;
+    id: number;
     content: string;
     createdAt: string;
     updatedAt: string;
@@ -49,14 +49,14 @@ export interface PostData {
         src: string;
     }[];
     Comments: CommentData[];
-    Likers: [{
+    Likers: {
         id: number;
-    }],
+    }[],
     PostId?: number,
     UserID?: number,
 }
 
-interface CommentData {
+export interface CommentData {
     id: number;
     content: string;
     createdAt: string;
@@ -103,7 +103,7 @@ interface RemovePostRequestAction {
 }
 interface RemovePostSuccessAction {
     type: typeof REMOVE_POST_SUCCESS,
-    data: string; // postId
+    data: { PostId: number };
 }
 interface RemovePostFailureAction {
     type: typeof REMOVE_POST_FAILURE,
@@ -139,7 +139,10 @@ interface DisLikePostRequestAction {
 }
 interface DisLikePostSuccessAction {
     type: typeof DISLIKE_POST_SUCCESS,
-    data: PostData[],
+    data: {
+        PostId: number,
+        UserId: number,
+    },
 }
 interface DisLikePostFailureAction {
     type: typeof DISLIKE_POST_FAILURE,
@@ -171,7 +174,7 @@ const initialState: PostState = {
     dislikePostError: null,
 };
 
-export const addPost = (data: PostState) => ({
+export const addPost = (data: string) => ({
     type: ADD_POST_REQUEST,
     data,
 });
@@ -219,7 +222,7 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.removePostError = null;
                 break;
             case REMOVE_POST_SUCCESS:
-                draft.mainPosts = draft.mainPosts.filter((value) => value.id !== action.data.PostId);
+                draft.mainPosts = draft.mainPosts.filter((value) => Number(value.id) !== action.data.PostId);
                 draft.removePostLoading = false;
                 draft.removePostDone = true;
                 break;
@@ -265,7 +268,7 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.dislikePostError = null;
                 break;
             case DISLIKE_POST_SUCCESS: {
-                const postIndex = draft.mainPosts.findIndex((value) => value.id === action.data.PostId);
+                const postIndex = draft.mainPosts.findIndex((value) => Number(value.id) === action.data.PostId);
                 if (postIndex > -1) { // 데이터 일관성을 위해 post의 인덱스를 찾은 후 해당 인덱스가 유효한 경우에만 Likers 배열을 수정하도록 조치합니다
                     const post = draft.mainPosts[postIndex];
                     post.Likers = post.Likers.filter((value) => value.id !== action.data.UserId);

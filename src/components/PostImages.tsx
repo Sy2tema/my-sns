@@ -1,9 +1,12 @@
 import { PlusOutlined } from "@ant-design/icons";
-import PropTypes from "prop-types";
 import { useCallback, useState } from "react";
 import ImagesZoom from './ImagesZoom';
 
-const PostImages = ({ images }) => {
+interface ImageType {
+    src: string;
+}
+
+const PostImages = ({ images }: { images: ImageType[] }) => {
     const [showImagesZoom, setShowImageZoom] = useState(false);
     const onZoom = useCallback(() => {
         setShowImageZoom(true);
@@ -46,10 +49,6 @@ const PostImages = ({ images }) => {
             {showImagesZoom && <ImagesZoom images={images} onClose={onClose} />}
         </>
     );
-};
-
-PostImages.propTypes = {
-    images: PropTypes.arrayOf(PostImages.object),
 };
 
 export default PostImages;

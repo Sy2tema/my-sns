@@ -9,8 +9,9 @@ import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
 import { DISLIKE_POST_REQUEST, LIKE_POST_REQUEST, REMOVE_POST_REQUEST } from '../actions';
 import FollowButton from './FollowButton';
+import { CommentData, PostData } from '../reducers/post';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post }: { post: PostData }) => {
     // 서버로부터 데이터를 받도록 수정하기 전에 더미데이터로 구현작업 진행
     const dispatch = useDispatch();
     const { removePostLoading } = useSelector((state: RootState) => state.post);
@@ -85,7 +86,7 @@ const PostCard = ({ post }) => {
                         header={`${post.Comments.length}개의 댓글`}
                         itemLayout="horizontal"
                         dataSource={post.Comments}
-                        renderItem={(item) => (
+                        renderItem={(item: CommentData) => (
                             <li>
                                 <Comment
                                     author={item.User.nickname}

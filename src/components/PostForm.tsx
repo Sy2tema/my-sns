@@ -14,16 +14,16 @@ const PostForm = () => {
         if (addPostDone) {
             setText("");
         }
-    }, [addPostDone]);
+    }, [addPostDone, setText]);
 
     const onSubmitPost = useCallback(() => {
         dispatch(addPost(text));
-    }, [text]);
+    }, [dispatch, text]);
 
-    const imageInput = useRef();
+    const imageInput = useRef<HTMLInputElement>(null);
     const onClickImageUpload = useCallback(() => {
-        imageInput.current.click();
-    }, [imageInput.current]);
+        imageInput.current?.click();
+    }, []);
 
     return (
         <Form
@@ -38,7 +38,7 @@ const PostForm = () => {
                 placeholder="어떤 신기한 일이 있었나요?"
             />
             <div>
-                <input type="file" multiple hidden ref={imageInput} />
+                <input type="file" multiple hidden ref={imageInput} onChange={onClickImageUpload} />
                 <Button onClick={onClickImageUpload}>이미지 업로드</Button>
                 <Button type="primary" style={{ float: 'right' }} htmlType="submit" loading={addPostLoading}>트윗</Button>
             </div>

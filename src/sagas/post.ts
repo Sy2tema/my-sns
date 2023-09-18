@@ -15,7 +15,6 @@ interface RequestData {
     postId?: number;
     userId?: number;
     id: number;
-    // @Todo: RequestData에 넣어줄 속성들 지정해주기
 }
 
 interface RequestAction extends AnyAction {

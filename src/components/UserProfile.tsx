@@ -19,19 +19,19 @@ const UserProfile = () => {
         dispatch(logoutRequestAction());
         localStorage.removeItem('isLoggedIn');
         router.push('/');
-    }, [])
+    }, [dispatch, router])
 
     return (
         <Card
             actions={[
-                <div key="twit">트윗<br />{ownUser.Posts.length}</div>,
-                <div key="followings">팔로잉<br />{ownUser.Followings.length}</div>,
-                <div key="followers">필로워<br />{ownUser.Followers.length}</div>,
+                <div key="twit">트윗<br />{ownUser?.Posts.length}</div>,
+                <div key="followings">팔로잉<br />{ownUser?.Followings.length}</div>,
+                <div key="followers">필로워<br />{ownUser?.Followers.length}</div>,
             ]}
         >
             <Card.Meta
-                avatar={<Avatar>{ownUser.nickname[0]}</Avatar>}
-                title={ownUser.nickname}
+                avatar={<Avatar>{ownUser?.nickname[0]}</Avatar>}
+                title={ownUser?.nickname}
             />
             <ButtonWrapper onClick={onLogOut} loading={logoutLoading}>로그아웃</ButtonWrapper>
         </Card>
