@@ -61,6 +61,7 @@
     "@types/react-slick": "^0.23.10",
     "@types/shortid": "^0.0.29",
     "@types/styled-components": "^5.1.26",
+    "dependency-cruiser": "^13.1.5",
     "eslint": "^8.41.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-react-hooks": "^4.6.0"
