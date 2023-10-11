@@ -5,6 +5,7 @@ import {
     LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS,
     LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
     DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
+    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE,
 } from "../actions";
 import { produce } from "immer";
 
@@ -31,6 +32,9 @@ interface PostState {
     dislikePostLoading: boolean;
     dislikePostDone: boolean;
     dislikePostError: boolean | string | null;
+    uploadImagesLoading: boolean;
+    uploadImagesDone: boolean;
+    uploadImagesError: boolean | string | null;
 }
 
 export interface PostData {
@@ -74,7 +78,8 @@ type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAc
     | LoadPostRequestAction | LoadPostSuccessAction | LoadPostFailureAction
     | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction
     | LikePostRequestAction | LikePostSuccessAction | LikePostFailureAction
-    | DisLikePostRequestAction | DisLikePostSuccessAction | DisLikePostFailureAction;
+    | DisLikePostRequestAction | DisLikePostSuccessAction | DisLikePostFailureAction
+    | UploadImagesRequestAction | UploadImagesSuccessAction | UploadImagesFailureAction;
 
 interface AddPostRequestAction {
     type: typeof ADD_POST_REQUEST,
@@ -148,6 +153,17 @@ interface DisLikePostFailureAction {
     type: typeof DISLIKE_POST_FAILURE,
     error: string,
 }
+interface UploadImagesRequestAction {
+    type: typeof UPLOAD_IMAGES_REQUEST,
+}
+interface UploadImagesSuccessAction {
+    type: typeof UPLOAD_IMAGES_SUCCESS,
+    data: string[],
+}
+interface UploadImagesFailureAction {
+    type: typeof UPLOAD_IMAGES_FAILURE,
+    error: string,
+}
 
 const initialState: PostState = {
     id: -1,
@@ -172,6 +188,9 @@ const initialState: PostState = {
     dislikePostLoading: false,
     dislikePostDone: false,
     dislikePostError: null,
+    uploadImagesLoading: false,
+    uploadImagesDone: false,
+    uploadImagesError: null,
 };
 
 export const addPost = (data: string) => ({
@@ -278,8 +297,22 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 break;
             }
             case DISLIKE_POST_FAILURE:
-                draft.dislikePostLoading = false;
-                draft.dislikePostError = action.error;
+                draft.uploadImagesLoading = false;
+                draft.uploadImagesError = action.error;
+                break;
+            case UPLOAD_IMAGES_REQUEST:
+                draft.uploadImagesLoading = true;
+                draft.uploadImagesDone = false;
+                draft.uploadImagesError = null;
+                break;
+            case UPLOAD_IMAGES_SUCCESS:
+                draft.imagePaths = action.data;
+                draft.uploadImagesLoading = false;
+                draft.uploadImagesDone = true;
+                break;
+            case UPLOAD_IMAGES_FAILURE:
+                draft.uploadImagesLoading = false;
+                draft.uploadImagesError = action.error;
                 break;
             default:
                 break;

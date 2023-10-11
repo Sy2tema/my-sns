@@ -8,6 +8,7 @@ import {
     LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE,
     LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
     DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
+    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE,
 } from "../actions";
 import { AnyAction } from "redux";
 
@@ -268,6 +269,46 @@ function* addComment(action: RequestAction) {
     }
 }
 
+// form 데이터는 그대로 전달해야지 중괄호로 감싸게 되면 JSON형식으로 변환된다는 것에 주의
+function uploadImagesAPI(data: RequestData) { // POST post/1/comment
+    return axios.post(`/post/images`, data);
+}
+
+function* uploadImages(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(uploadImagesAPI, action.data);
+
+        yield put({
+            type: UPLOAD_IMAGES_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            if (err.response) {
+                console.error("Axios error:", err);
+                yield put({
+                    type: UPLOAD_IMAGES_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: UPLOAD_IMAGES_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: UPLOAD_IMAGES_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
+
 function* watchAddPost() {
     yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -286,6 +327,9 @@ function* watchDisLikePost() {
 function* watchAddComment() {
     yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
+function* watchUploadImages() {
+    yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
+}
 
 export default function* postSaga() {
     yield all([
@@ -295,5 +339,6 @@ export default function* postSaga() {
         fork(watchLikePost),
         fork(watchDisLikePost),
         fork(watchAddComment),
+        fork(watchUploadImages),
     ]);
 }
