@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import { addPost } from "../reducers/post";
 import useInput from "../hooks/useInput";
-import { UPLOAD_IMAGES_REQUEST } from "../actions";
+import { ADD_POST_REQUEST, REMOVE_IMAGE, UPLOAD_IMAGES_REQUEST } from "../actions";
 
 const PostForm = () => {
     const dispatch = useDispatch();
@@ -18,8 +18,21 @@ const PostForm = () => {
     }, [addPostDone, setText]);
 
     const onSubmitPost = useCallback(() => {
-        dispatch(addPost(text));
-    }, [dispatch, text]);
+        if (!text || !text.trim()) {
+            return alert("텍스트를 입력해주세요.");
+        }
+
+        const formData = new FormData();
+        imagePaths.forEach((path) => {
+            formData.append('image', path);
+        })
+        formData.append('content', text);
+
+        dispatch({
+            type: ADD_POST_REQUEST,
+            data: formData,
+        });
+    }, [dispatch, imagePaths, text]);
 
     const imageInput = useRef<HTMLInputElement>(null);
     const onClickImageUpload = useCallback(() => {
@@ -37,7 +50,15 @@ const PostForm = () => {
             type: UPLOAD_IMAGES_REQUEST,
             data: imageFormData,
         });
-    }, []);
+    }, [dispatch]);
+
+    // 동기 action
+    const onRemoveImage = useCallback((index: number) => () => {
+        dispatch({
+            type: REMOVE_IMAGE,
+            data: index,
+        });
+    }, [dispatch]);
 
     return (
         <Form
@@ -57,11 +78,11 @@ const PostForm = () => {
                 <Button type="primary" style={{ float: 'right' }} htmlType="submit" loading={addPostLoading}>트윗</Button>
             </div>
             <div>
-                {imagePaths.map((value) => (
+                {imagePaths.map((value, index) => (
                     <div key={value} style={{ display: 'inline-block' }}>
-                        <img src={value} style={{ width: '200px' }} alt={value} />
+                        <img src={`http://192.168.36.128:3065/${value}`} style={{ width: '200px' }} alt={value} />
                         <div>
-                            <Button>제거</Button>
+                            <Button onClick={onRemoveImage(index)}>제거</Button>
                         </div>
                     </div>
 

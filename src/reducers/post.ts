@@ -5,7 +5,7 @@ import {
     LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS,
     LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
     DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
-    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE,
+    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, REMOVE_IMAGE,
 } from "../actions";
 import { produce } from "immer";
 
@@ -79,7 +79,13 @@ type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAc
     | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction
     | LikePostRequestAction | LikePostSuccessAction | LikePostFailureAction
     | DisLikePostRequestAction | DisLikePostSuccessAction | DisLikePostFailureAction
-    | UploadImagesRequestAction | UploadImagesSuccessAction | UploadImagesFailureAction;
+    | UploadImagesRequestAction | UploadImagesSuccessAction | UploadImagesFailureAction
+    | RemoveImageAction;
+
+interface RemoveImageAction {
+    type: typeof REMOVE_IMAGE,
+    data: number,
+}
 
 interface AddPostRequestAction {
     type: typeof ADD_POST_REQUEST,
@@ -193,7 +199,7 @@ const initialState: PostState = {
     uploadImagesError: null,
 };
 
-export const addPost = (data: string) => ({
+export const addPost = (data: PostData) => ({
     type: ADD_POST_REQUEST,
     data,
 });
@@ -206,6 +212,9 @@ export const addComment = (data: PostState) => ({
 const reducer = (state = initialState, action: PostAction): PostState => {
     return produce(state, (draft) => {
         switch (action.type) {
+            case REMOVE_IMAGE:
+                draft.imagePaths = draft.imagePaths.filter((value, index) => index !== action.data);
+                break;
             case ADD_POST_REQUEST:
                 draft.addPostLoading = true;
                 draft.addPostDone = false;
@@ -215,6 +224,7 @@ const reducer = (state = initialState, action: PostAction): PostState => {
                 draft.mainPosts.unshift(action.data);
                 draft.addPostLoading = false;
                 draft.addPostDone = true;
+                draft.imagePaths = [];
                 break;
             case ADD_POST_FAILURE:
                 draft.addPostLoading = false;
