@@ -1,37 +1,11 @@
-import axios, { isAxiosError } from "axios";
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import {
-    ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
-    ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
-    ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER,
-    REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE,
-    LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE,
-    LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
-    DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
-    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE,
-} from "../actions";
-import { AnyAction } from "redux";
+import { isAxiosError } from "axios";
+import { call, put, takeLatest } from "redux-saga/effects";
+import { RequestAction, ApiResponse } from ".";
+import { ADD_POST_SUCCESS, ADD_POST_FAILURE, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_SUCCESS, LOAD_POST_FAILURE, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, ADD_POST_REQUEST, REMOVE_POST_REQUEST, LOAD_POST_REQUEST, ADD_COMMENT_REQUEST, UPLOAD_IMAGES_REQUEST } from "../../reducers/post/actionTypes";
+import { ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER, LIKE_POST_SUCCESS, LIKE_POST_FAILURE, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE, LIKE_POST_REQUEST, DISLIKE_POST_REQUEST } from "../../reducers/user/actionTypes";
+import { addPostAPI, removePostAPI, loadPostAPI, likePostAPI, disLikePostAPI, addCommentAPI, uploadImagesAPI } from "./apis";
 
-interface RequestData {
-    postId?: number;
-    userId?: number;
-    id: number;
-}
-
-interface RequestAction extends AnyAction {
-    data: RequestData;
-}
-
-interface ApiResponse {
-    data: RequestData;
-    status: number;
-}
-
-function addPostAPI(data: RequestData) {
-    return axios.post('/post', { content: data });
-}
-
-function* addPost(action: RequestAction) {
+export function* addPost(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(addPostAPI, action.data);
 
@@ -70,11 +44,7 @@ function* addPost(action: RequestAction) {
     }
 }
 
-function removePostAPI(data: RequestData) {
-    return axios.delete(`/post/${data}`);
-}
-
-function* removePost(action: RequestAction) {
+export function* removePost(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(removePostAPI, action.data);
 
@@ -113,11 +83,7 @@ function* removePost(action: RequestAction) {
     }
 }
 
-function loadPostAPI(data: RequestData) {
-    return axios.get('/posts');
-}
-
-function* loadPost(action: RequestAction) {
+export function* loadPost(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(loadPostAPI, action.data);
 
@@ -152,11 +118,7 @@ function* loadPost(action: RequestAction) {
     }
 }
 
-function likePostAPI(data: RequestData) {
-    return axios.patch(`/post/${data}/like`);
-}
-
-function* likePost(action: RequestAction) {
+export function* likePost(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(likePostAPI, action.data);
 
@@ -191,11 +153,7 @@ function* likePost(action: RequestAction) {
     }
 }
 
-function disLikePostAPI(data: RequestData) {
-    return axios.delete(`/post/${data}/like`);
-}
-
-function* disLikePost(action: RequestAction) {
+export function* disLikePost(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(disLikePostAPI, action.data);
 
@@ -230,11 +188,7 @@ function* disLikePost(action: RequestAction) {
     }
 }
 
-function addCommentAPI(data: RequestData) { // POST post/1/comment
-    return axios.post(`/post/${data.postId}/comment`, data);
-}
-
-function* addComment(action: RequestAction) {
+export function* addComment(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(addCommentAPI, action.data);
 
@@ -269,12 +223,7 @@ function* addComment(action: RequestAction) {
     }
 }
 
-// form 데이터는 그대로 전달해야지 중괄호로 감싸게 되면 JSON형식으로 변환된다는 것에 주의
-function uploadImagesAPI(data: RequestData) { // POST post/1/comment
-    return axios.post(`/post/images`, data);
-}
-
-function* uploadImages(action: RequestAction) {
+export function* uploadImages(action: RequestAction) {
     try {
         const result: ApiResponse = yield call(uploadImagesAPI, action.data);
 
@@ -309,36 +258,24 @@ function* uploadImages(action: RequestAction) {
     }
 }
 
-function* watchAddPost() {
+export function* watchAddPost() {
     yield takeLatest(ADD_POST_REQUEST, addPost);
 }
-function* watchRemovePost() {
+export function* watchRemovePost() {
     yield takeLatest(REMOVE_POST_REQUEST, removePost);
 }
-function* watchLoadPost() {
+export function* watchLoadPost() {
     yield takeLatest(LOAD_POST_REQUEST, loadPost);
 }
-function* watchLikePost() {
+export function* watchLikePost() {
     yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
-function* watchDisLikePost() {
+export function* watchDisLikePost() {
     yield takeLatest(DISLIKE_POST_REQUEST, disLikePost);
 }
-function* watchAddComment() {
+export function* watchAddComment() {
     yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
-function* watchUploadImages() {
+export function* watchUploadImages() {
     yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
-}
-
-export default function* postSaga() {
-    yield all([
-        fork(watchAddPost),
-        fork(watchRemovePost),
-        fork(watchLoadPost),
-        fork(watchLikePost),
-        fork(watchDisLikePost),
-        fork(watchAddComment),
-        fork(watchUploadImages),
-    ]);
 }

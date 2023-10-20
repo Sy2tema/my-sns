@@ -2,9 +2,9 @@ import { Card, List } from "antd";
 import PropTypes from 'prop-types';
 import { StopOutlined } from '@ant-design/icons';
 import { useDispatch } from "react-redux";
-import { REMOVE_FOLLOWER_REQUEST, UNFOLLOW_REQUEST } from "../actions";
-import { IdData, UserData } from "../reducers/user";
 import { ReactNode } from "react";
+import { UNFOLLOW_REQUEST, REMOVE_FOLLOWER_REQUEST } from "../reducers/user/actionTypes";
+import { UserData, IdData } from "../reducers/user/types";
 
 const FollowList = ({ header, data }: { header: ReactNode, data: (UserData | IdData)[] }) => {
     const dispatch = useDispatch();

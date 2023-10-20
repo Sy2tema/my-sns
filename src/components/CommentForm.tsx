@@ -4,8 +4,8 @@ import { useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
-import { ADD_COMMENT_REQUEST } from "../actions";
-import { PostData } from "../reducers/post";
+import { ADD_COMMENT_REQUEST } from "../reducers/post/actionTypes";
+import { PostData } from "../reducers/post/types";
 
 const CommentForm = ({ post }: { post: PostData }) => {
     const dispatch = useDispatch();

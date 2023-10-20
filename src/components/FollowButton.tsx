@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducers';
 import { useCallback } from 'react';
-import { FOLLOW_REQUEST, UNFOLLOW_REQUEST } from '../actions';
-import { PostData } from '../reducers/post';
+import { UNFOLLOW_REQUEST, FOLLOW_REQUEST } from '../reducers/user/actionTypes';
+import { PostData } from '../reducers/post/types';
 
 const FollowButton = ({ post }: { post: PostData }) => {
     const { ownUser, followLoading, unfollowLoading } = useSelector((state: RootState) => state.user);

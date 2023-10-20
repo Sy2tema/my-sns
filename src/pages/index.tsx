@@ -4,7 +4,8 @@ import { RootState } from '../reducers';
 import AppLayout from '../components/AppLayout';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-import { LOAD_POST_REQUEST, LOAD_MY_INFO_REQUEST } from '../actions';
+import { LOAD_POST_REQUEST } from '../reducers/post/actionTypes';
+import { LOAD_MY_INFO_REQUEST } from '../reducers/user/actionTypes';
 
 // nextjs는 12, antd는 4버전으로 맞추자
 const Home = () => {
