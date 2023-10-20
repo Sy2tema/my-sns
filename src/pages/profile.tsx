@@ -6,7 +6,7 @@ import FollowList from "../components/FollowList";
 import { RootState } from "../reducers";
 import { useEffect } from "react";
 import Router from "next/router";
-import { LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST } from "../actions";
+import { LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST } from "../reducers/user/actionTypes";
 
 const Profile = () => {
     const dispatch = useDispatch();

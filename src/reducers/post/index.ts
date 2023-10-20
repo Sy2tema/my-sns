@@ -1,175 +1,15 @@
+import { produce } from "immer";
 import {
+    REMOVE_IMAGE,
     ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
     ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
     REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE,
-    LOAD_POST_REQUEST, LOAD_POST_FAILURE, LOAD_POST_SUCCESS,
+    LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE,
     LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
     DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
-    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, REMOVE_IMAGE,
-} from "../actions";
-import { produce } from "immer";
-
-interface PostState {
-    id: number,
-    mainPosts: PostData[];
-    imagePaths: string[];
-    hasMorePost: boolean;
-    addPostLoading: boolean;
-    addPostDone: boolean;
-    addPostError: boolean | string | null;
-    addCommentLoading: boolean;
-    addCommentDone: boolean;
-    addCommentError: boolean | string | null;
-    removePostLoading: boolean;
-    removePostDone: boolean;
-    removePostError: boolean | string | null;
-    loadPostLoading: boolean;
-    loadPostDone: boolean;
-    loadPostError: boolean | string | null;
-    likePostLoading: boolean;
-    likePostDone: boolean;
-    likePostError: boolean | string | null;
-    dislikePostLoading: boolean;
-    dislikePostDone: boolean;
-    dislikePostError: boolean | string | null;
-    uploadImagesLoading: boolean;
-    uploadImagesDone: boolean;
-    uploadImagesError: boolean | string | null;
-}
-
-export interface PostData {
-    id: number;
-    content: string;
-    createdAt: string;
-    updatedAt: string;
-    UserId: number;
-    RetweetId: number;
-    User: {
-        id: number;
-        nickname: string;
-    };
-    Images: {
-        id: number;
-        src: string;
-    }[];
-    Comments: CommentData[];
-    Likers: {
-        id: number;
-    }[],
-    PostId?: number,
-    UserID?: number,
-}
-
-export interface CommentData {
-    id: number;
-    content: string;
-    createdAt: string;
-    updatedAt: string;
-    UserId: number;
-    PostId: number;
-    User: {
-        id: number;
-        nickname: string;
-    }
-}
-
-type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFailureAction
-    | AddCommentRequestAction | AddCommentSuccessAction | AddCommentFailureAction
-    | LoadPostRequestAction | LoadPostSuccessAction | LoadPostFailureAction
-    | RemovePostRequestAction | RemovePostSuccessAction | RemovePostFailureAction
-    | LikePostRequestAction | LikePostSuccessAction | LikePostFailureAction
-    | DisLikePostRequestAction | DisLikePostSuccessAction | DisLikePostFailureAction
-    | UploadImagesRequestAction | UploadImagesSuccessAction | UploadImagesFailureAction
-    | RemoveImageAction;
-
-interface RemoveImageAction {
-    type: typeof REMOVE_IMAGE,
-    data: number,
-}
-
-interface AddPostRequestAction {
-    type: typeof ADD_POST_REQUEST,
-}
-interface AddPostSuccessAction {
-    type: typeof ADD_POST_SUCCESS,
-    data: PostData,
-}
-interface AddPostFailureAction {
-    type: typeof ADD_POST_FAILURE,
-    error: string,
-}
-interface AddCommentRequestAction {
-    type: typeof ADD_COMMENT_REQUEST,
-}
-interface AddCommentSuccessAction {
-    type: typeof ADD_COMMENT_SUCCESS,
-    data: CommentData,
-}
-interface AddCommentFailureAction {
-    type: typeof ADD_COMMENT_FAILURE,
-    error: string,
-}
-interface RemovePostRequestAction {
-    type: typeof REMOVE_POST_REQUEST,
-}
-interface RemovePostSuccessAction {
-    type: typeof REMOVE_POST_SUCCESS,
-    data: { PostId: number };
-}
-interface RemovePostFailureAction {
-    type: typeof REMOVE_POST_FAILURE,
-    error: string,
-}
-interface LoadPostRequestAction {
-    type: typeof LOAD_POST_REQUEST,
-}
-interface LoadPostSuccessAction {
-    type: typeof LOAD_POST_SUCCESS,
-    data: PostData[],
-}
-interface LoadPostFailureAction {
-    type: typeof LOAD_POST_FAILURE,
-    error: string,
-}
-interface LikePostRequestAction {
-    type: typeof LIKE_POST_REQUEST,
-}
-interface LikePostSuccessAction {
-    type: typeof LIKE_POST_SUCCESS,
-    data: {
-        PostId: number,
-        UserId: number,
-    },
-}
-interface LikePostFailureAction {
-    type: typeof LIKE_POST_FAILURE,
-    error: string,
-}
-interface DisLikePostRequestAction {
-    type: typeof DISLIKE_POST_REQUEST,
-}
-interface DisLikePostSuccessAction {
-    type: typeof DISLIKE_POST_SUCCESS,
-    data: {
-        PostId: number,
-        UserId: number,
-    },
-}
-interface DisLikePostFailureAction {
-    type: typeof DISLIKE_POST_FAILURE,
-    error: string,
-}
-interface UploadImagesRequestAction {
-    type: typeof UPLOAD_IMAGES_REQUEST,
-}
-interface UploadImagesSuccessAction {
-    type: typeof UPLOAD_IMAGES_SUCCESS,
-    data: string[],
-}
-interface UploadImagesFailureAction {
-    type: typeof UPLOAD_IMAGES_FAILURE,
-    error: string,
-}
+    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE
+} from "./actionTypes";
+import { PostState, PostAction } from "./types";
 
 const initialState: PostState = {
     id: -1,
@@ -198,16 +38,6 @@ const initialState: PostState = {
     uploadImagesDone: false,
     uploadImagesError: null,
 };
-
-export const addPost = (data: PostData) => ({
-    type: ADD_POST_REQUEST,
-    data,
-});
-
-export const addComment = (data: PostState) => ({
-    type: ADD_COMMENT_REQUEST,
-    data,
-})
 
 const reducer = (state = initialState, action: PostAction): PostState => {
     return produce(state, (draft) => {

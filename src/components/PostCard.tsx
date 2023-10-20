@@ -7,9 +7,10 @@ import PostImages from './PostImages';
 import { useCallback, useState } from 'react';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
-import { DISLIKE_POST_REQUEST, LIKE_POST_REQUEST, REMOVE_POST_REQUEST } from '../actions';
 import FollowButton from './FollowButton';
-import { CommentData, PostData } from '../reducers/post';
+import { REMOVE_POST_REQUEST } from '../reducers/post/actionTypes';
+import { PostData, CommentData } from '../reducers/post/types';
+import { LIKE_POST_REQUEST, DISLIKE_POST_REQUEST } from '../reducers/user/actionTypes';
 
 const PostCard = ({ post }: { post: PostData }) => {
     // 서버로부터 데이터를 받도록 수정하기 전에 더미데이터로 구현작업 진행

@@ -2,9 +2,8 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { Button, Form, Input } from "antd"
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
-import { addPost } from "../reducers/post";
 import useInput from "../hooks/useInput";
-import { ADD_POST_REQUEST, REMOVE_IMAGE, UPLOAD_IMAGES_REQUEST } from "../actions";
+import { ADD_POST_REQUEST, UPLOAD_IMAGES_REQUEST, REMOVE_IMAGE } from "../reducers/post/actionTypes";
 
 const PostForm = () => {
     const dispatch = useDispatch();

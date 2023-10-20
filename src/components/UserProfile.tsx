@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { logoutRequestAction } from '../reducers/user';
 import { RootState } from '../reducers';
+import { logoutRequestAction } from '../reducers/user/actions';
 
 const ButtonWrapper = styled(Button)`
     margin-top: 10px;
