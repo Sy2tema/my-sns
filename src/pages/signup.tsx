@@ -6,9 +6,9 @@ import { Button, Checkbox, Form } from "antd";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 import useInput from "../hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
-import { SIGN_UP_REQUEST } from "../actions";
 import { RootState } from "../reducers";
 import Router from "next/router";
+import { SIGN_UP_REQUEST } from "../reducers/user/actionTypes";
 
 const ErrorMessage = styled.div`
     color: red;

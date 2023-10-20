@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../reducers";
 import useInput from "../hooks/useInput";
-import { CHANGE_NICKNAME_REQUEST } from "../actions";
+import { CHANGE_NICKNAME_REQUEST } from "../reducers/user/actionTypes";
 
 const FormWrapper = styled(Form)`
     margin-bottom: '20px';
