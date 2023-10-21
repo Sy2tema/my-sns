@@ -21,15 +21,12 @@ const PostForm = () => {
             return alert("텍스트를 입력해주세요.");
         }
 
-        const formData = new FormData();
-        imagePaths.forEach((path) => {
-            formData.append('image', path);
-        })
-        formData.append('content', text);
-
         dispatch({
             type: ADD_POST_REQUEST,
-            data: formData,
+            data: {
+                imagePaths,
+                content: text,
+            },
         });
     }, [dispatch, imagePaths, text]);
 
