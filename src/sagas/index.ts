@@ -1,7 +1,7 @@
 import { all, fork } from 'redux-saga/effects';
 import axios from 'axios';
-import postSaga from './post';
 import userSaga from './user';
+import postSaga from './post';
 
 // sagas 내 모든 axios요청에는 아래의 설정값들이 기본으로 적용된다
 axios.defaults.baseURL = 'http://192.168.36.128:3065';

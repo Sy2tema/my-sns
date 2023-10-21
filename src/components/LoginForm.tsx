@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import useInput from "../hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
+import { loginRequestAction } from "../reducers/user/actions";
 
 const ButtonWrapper = styled.div`
     margin-top: 10px;
@@ -59,7 +60,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
-function loginRequestAction(arg0: { email: string; password: string; }): any {
-    throw new Error("Function not implemented.");
-}
