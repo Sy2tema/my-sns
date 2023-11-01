@@ -6,7 +6,7 @@ import {
     LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE,
     UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE,
     DISLIKE_POST_FAILURE, DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS,
-    LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS
+    LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS
 } from "./actionTypes";
 
 export interface PostState {
@@ -35,6 +35,9 @@ export interface PostState {
     uploadImagesLoading: boolean;
     uploadImagesDone: boolean;
     uploadImagesError: boolean | string | null;
+    retweetLoading: boolean;
+    retweetDone: boolean;
+    retweetError: boolean | string | null;
 }
 
 export interface PostData {
@@ -80,6 +83,7 @@ export type PostAction = AddPostRequestAction | AddPostSuccessAction | AddPostFa
     | LikePostRequestAction | LikePostSuccessAction | LikePostFailureAction
     | DisLikePostRequestAction | DisLikePostSuccessAction | DisLikePostFailureAction
     | UploadImagesRequestAction | UploadImagesSuccessAction | UploadImagesFailureAction
+    | RetweetRequestAction | RetweetSuccessAction | RetweetFailureAction
     | RemoveImageAction;
 
 export interface RemoveImageAction {
@@ -168,5 +172,16 @@ export interface UploadImagesSuccessAction {
 }
 export interface UploadImagesFailureAction {
     type: typeof UPLOAD_IMAGES_FAILURE,
+    error: string,
+}
+export interface RetweetRequestAction {
+    type: typeof RETWEET_REQUEST,
+}
+export interface RetweetSuccessAction {
+    type: typeof RETWEET_SUCCESS,
+    data: PostData,
+}
+export interface RetweetFailureAction {
+    type: typeof RETWEET_FAILURE,
     error: string,
 }
