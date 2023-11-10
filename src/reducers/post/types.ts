@@ -47,6 +47,7 @@ export interface PostData {
     updatedAt: string;
     UserId: number;
     RetweetId: number;
+    Retweet: PostData;
     User: {
         id: number;
         nickname: string;
@@ -58,9 +59,8 @@ export interface PostData {
     Comments: CommentData[];
     Likers: {
         id: number;
-    }[],
-    PostId?: number,
-    UserID?: number,
+    }[];
+    PostId?: number;
 }
 
 export interface CommentData {
