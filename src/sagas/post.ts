@@ -1,7 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import { AnyAction } from "redux";
-import { ADD_POST_SUCCESS, ADD_POST_FAILURE, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_SUCCESS, LOAD_POST_FAILURE, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, ADD_POST_REQUEST, REMOVE_POST_REQUEST, LOAD_POST_REQUEST, ADD_COMMENT_REQUEST, UPLOAD_IMAGES_REQUEST } from "../reducers/post/actionTypes";
+import { ADD_POST_SUCCESS, ADD_POST_FAILURE, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_SUCCESS, LOAD_POST_FAILURE, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, ADD_POST_REQUEST, REMOVE_POST_REQUEST, LOAD_POST_REQUEST, ADD_COMMENT_REQUEST, UPLOAD_IMAGES_REQUEST, RETWEET_REQUEST, RETWEET_FAILURE, RETWEET_SUCCESS } from "../reducers/post/actionTypes";
 import { ADD_POST_TO_CURRENT_USER, REMOVE_POST_FROM_CURRENT_USER, LIKE_POST_SUCCESS, LIKE_POST_FAILURE, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE, LIKE_POST_REQUEST, DISLIKE_POST_REQUEST } from "../reducers/user/actionTypes";
 
 interface RequestData {
@@ -301,6 +301,45 @@ function* uploadImages(action: RequestAction) {
     }
 }
 
+function retweetAPI(data: RequestData) { // POST post/1/comment
+    return axios.post(`/post/${data}/retweet`);
+}
+
+function* retweet(action: RequestAction) {
+    try {
+        const result: ApiResponse = yield call(retweetAPI, action.data);
+
+        yield put({
+            type: RETWEET_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        if (isAxiosError(err)) {
+            if (err.response) {
+                console.error("Axios error:", err);
+                yield put({
+                    type: RETWEET_FAILURE,
+                    error: err.response.data,
+                });
+            } else {
+                // 서버 응답이 없는 경우의 처리
+                console.error("No server response:", err);
+                yield put({
+                    type: RETWEET_FAILURE,
+                    error: "No server response."
+                });
+            }
+        } else {
+            // AxiosError가 아닌 다른 유형의 오류를 처리
+            console.error("An unknown error occurred:", err);
+            yield put({
+                type: RETWEET_FAILURE,
+                error: "An unknown error occurred."
+            });
+        }
+    }
+}
+
 function* watchAddPost() {
     yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -322,6 +361,9 @@ function* watchAddComment() {
 function* watchUploadImages() {
     yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
 }
+function* watchRetweet() {
+    yield takeLatest(RETWEET_REQUEST, retweet);
+}
 
 export default function* postSaga() {
     yield all([
@@ -332,5 +374,6 @@ export default function* postSaga() {
         fork(watchDisLikePost),
         fork(watchAddComment),
         fork(watchUploadImages),
+        fork(watchRetweet),
     ]);
 }

@@ -7,7 +7,7 @@ import {
     LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE,
     LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE,
     DISLIKE_POST_REQUEST, DISLIKE_POST_SUCCESS, DISLIKE_POST_FAILURE,
-    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE
+    UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS
 } from "./actionTypes";
 import { PostState, PostAction } from "./types";
 
@@ -37,6 +37,9 @@ const initialState: PostState = {
     uploadImagesLoading: false,
     uploadImagesDone: false,
     uploadImagesError: null,
+    retweetLoading: false,
+    retweetDone: false,
+    retweetError: null,
 };
 
 const reducer = (state = initialState, action: PostAction): PostState => {
@@ -153,6 +156,20 @@ const reducer = (state = initialState, action: PostAction): PostState => {
             case UPLOAD_IMAGES_FAILURE:
                 draft.uploadImagesLoading = false;
                 draft.uploadImagesError = action.error;
+                break;
+            case RETWEET_REQUEST:
+                draft.retweetLoading = true;
+                draft.retweetDone = false;
+                draft.retweetError = null;
+                break;
+            case RETWEET_SUCCESS:
+                draft.retweetLoading = false;
+                draft.retweetDone = true;
+                draft.mainPosts.unshift(action.data);
+                break;
+            case RETWEET_FAILURE:
+                draft.retweetLoading = false;
+                draft.retweetError = action.error;
                 break;
             default:
                 break;
