@@ -105,8 +105,8 @@ function* removePost(action: RequestAction) {
     }
 }
 
-function loadPostAPI(data: RequestData) {
-    return axios.get('/posts');
+function loadPostAPI(lastId: RequestData) {
+    return axios.get(`/posts?lastId=${lastId || 0}`);
 }
 
 function* loadPost(action: RequestAction) {

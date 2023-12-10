@@ -4,7 +4,7 @@ import { Avatar, Button, Card, Comment, List, Popover } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import PostImages from './PostImages';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
 import FollowButton from './FollowButton';

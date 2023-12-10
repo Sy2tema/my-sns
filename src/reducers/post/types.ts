@@ -126,6 +126,7 @@ export interface RemovePostFailureAction {
 }
 export interface LoadPostRequestAction {
     type: typeof LOAD_POST_REQUEST,
+    data: { lastId?: number }
 }
 export interface LoadPostSuccessAction {
     type: typeof LOAD_POST_SUCCESS,
