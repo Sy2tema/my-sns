@@ -111,7 +111,7 @@ function loadPostAPI(lastId: RequestData) {
 
 function* loadPost(action: RequestAction) {
     try {
-        const result: ApiResponse = yield call(loadPostAPI, action.data);
+        const result: ApiResponse = yield call(loadPostAPI, action.lastId);
 
         yield put({
             type: LOAD_POST_SUCCESS,
