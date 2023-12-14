@@ -7,7 +7,6 @@ import PostCard from '../components/PostCard';
 import { LOAD_POST_REQUEST } from '../reducers/post/actionTypes';
 import { LOAD_MY_INFO_REQUEST } from '../reducers/user/actionTypes';
 
-// nextjs는 12, antd는 4버전으로 맞추자
 const Home = () => {
   const dispatch = useDispatch();
   const ownUser = useSelector((state: RootState) => state.user.ownUser);
@@ -31,7 +30,10 @@ const Home = () => {
 
   useEffect(() => {
     function onScroll() {
-      if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
+      const scrollPosition = window.scrollY + document.documentElement.clientHeight;
+      const threshold = document.documentElement.scrollHeight * 0.75;
+
+      if (scrollPosition > threshold) {
         if (hasMorePost && !loadPostLoading) {
           const lastId = mainPosts[mainPosts.length - 1]?.id;
           dispatch({
@@ -47,7 +49,6 @@ const Home = () => {
       window.removeEventListener("scroll", onScroll);
     }
   }, [dispatch, hasMorePost, loadPostLoading, mainPosts]);
-
 
   return (
     <AppLayout>
