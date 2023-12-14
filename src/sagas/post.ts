@@ -105,13 +105,13 @@ function* removePost(action: RequestAction) {
     }
 }
 
-function loadPostAPI(data: RequestData) {
-    return axios.get('/posts');
+function loadPostAPI(lastId: RequestData) {
+    return axios.get(`/posts?lastId=${lastId || 0}`);
 }
 
 function* loadPost(action: RequestAction) {
     try {
-        const result: ApiResponse = yield call(loadPostAPI, action.data);
+        const result: ApiResponse = yield call(loadPostAPI, action.lastId);
 
         yield put({
             type: LOAD_POST_SUCCESS,

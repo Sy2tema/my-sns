@@ -7,7 +7,6 @@ import PostCard from '../components/PostCard';
 import { LOAD_POST_REQUEST } from '../reducers/post/actionTypes';
 import { LOAD_MY_INFO_REQUEST } from '../reducers/user/actionTypes';
 
-// nextjs는 12, antd는 4버전으로 맞추자
 const Home = () => {
   const dispatch = useDispatch();
   const ownUser = useSelector((state: RootState) => state.user.ownUser);
@@ -22,7 +21,7 @@ const Home = () => {
     dispatch({
       type: LOAD_MY_INFO_REQUEST,
     });
-    if (mainPosts.length === 0) { // 최초 게시글 로딩 후 중복 로딩을 방지하도록 조건식을 추가했습니다.
+    if (mainPosts.length === 0) {
       dispatch({
         type: LOAD_POST_REQUEST,
       });
@@ -31,10 +30,17 @@ const Home = () => {
 
   useEffect(() => {
     function onScroll() {
-      if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300 && hasMorePost && !loadPostLoading) {
-        dispatch({
-          type: LOAD_POST_REQUEST,
-        });
+      const scrollPosition = window.scrollY + document.documentElement.clientHeight;
+      const threshold = document.documentElement.scrollHeight * 0.75;
+
+      if (scrollPosition > threshold) {
+        if (hasMorePost && !loadPostLoading) {
+          const lastId = mainPosts[mainPosts.length - 1]?.id;
+          dispatch({
+            type: LOAD_POST_REQUEST,
+            lastId,
+          });
+        }
       }
     }
 
@@ -42,8 +48,7 @@ const Home = () => {
     return () => {
       window.removeEventListener("scroll", onScroll);
     }
-  }, [dispatch, hasMorePost, loadPostLoading]);
-
+  }, [dispatch, hasMorePost, loadPostLoading, mainPosts]);
 
   return (
     <AppLayout>
