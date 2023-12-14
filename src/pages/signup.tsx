@@ -22,7 +22,7 @@ const Signup = () => {
         if (ownUser && ownUser.id) {
             Router.replace("/");
         }
-    }, [ownUser && ownUser.id]);
+    }, [ownUser]);
 
     useEffect(() => {
         if (signupDone) {
