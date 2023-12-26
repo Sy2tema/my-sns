@@ -6,6 +6,7 @@ import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
 import { LOAD_POST_REQUEST } from '../reducers/post/actionTypes';
 import { LOAD_MY_INFO_REQUEST } from '../reducers/user/actionTypes';
+import wrapper from '../store/configureStore';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -16,17 +17,6 @@ const Home = () => {
     if (retweetError)
       return alert(retweetError);
   }, [retweetError]);
-
-  useEffect(() => {
-    dispatch({
-      type: LOAD_MY_INFO_REQUEST,
-    });
-    if (mainPosts.length === 0) {
-      dispatch({
-        type: LOAD_POST_REQUEST,
-      });
-    }
-  }, [dispatch, mainPosts.length]);
 
   useEffect(() => {
     function onScroll() {
@@ -57,5 +47,23 @@ const Home = () => {
     </AppLayout>
   );
 }
+
+export const getServerSideProps = wrapper.getServerSideProps((store) => async (context) => {
+  store.dispatch({
+    type: LOAD_MY_INFO_REQUEST,
+  });
+
+  store.dispatch({
+    type: LOAD_POST_REQUEST,
+  });
+
+  // Redux Saga 작업이 완료될 때까지 기다리기
+  await store.sagaTask?.toPromise();
+
+  // 모든 데이터 로딩이 완료되면 props를 반환
+  return {
+    props: {}, // 필요한 props를 전달
+  };
+});
 
 export default Home;
