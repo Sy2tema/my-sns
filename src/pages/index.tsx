@@ -48,7 +48,7 @@ const Home = () => {
   );
 }
 
-export const getServerSideProps = wrapper.getServerSideProps((store) => async (context) => {
+export const getServerSideProps = wrapper.getServerSideProps((store) => async () => {
   store.dispatch({
     type: LOAD_MY_INFO_REQUEST,
   });
@@ -57,12 +57,10 @@ export const getServerSideProps = wrapper.getServerSideProps((store) => async (c
     type: LOAD_POST_REQUEST,
   });
 
-  // Redux Saga 작업이 완료될 때까지 기다리기
-  await store.sagaTask?.toPromise();
+  store.sagaTask?.toPromise();
 
-  // 모든 데이터 로딩이 완료되면 props를 반환
   return {
-    props: {}, // 필요한 props를 전달
+    props: {},
   };
 });
 
