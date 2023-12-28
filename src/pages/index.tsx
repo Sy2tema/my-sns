@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { END } from 'redux-saga';
 import { RootState } from '../reducers';
 import AppLayout from '../components/AppLayout';
 import PostForm from '../components/PostForm';
@@ -57,7 +58,8 @@ export const getServerSideProps = wrapper.getServerSideProps((store) => async ()
     type: LOAD_POST_REQUEST,
   });
 
-  store.sagaTask?.toPromise();
+  store.dispatch(END);
+  await store.sagaTask?.toPromise();
 
   return {
     props: {},
